@@ -5,14 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orth0 - Psy Teck</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; padding: 50px; }
-        .header { background: #007bff; color: white; padding: 20px; border-radius: 10px; }
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f8f9fa;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: var(--bg-color); display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* الشريط العلوي */
+        .navbar { background: var(--primary-color); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .nav-links button { background: var(--accent-color); border: none; color: white; padding: 8px 15px; margin-right: 5px; border-radius: 5px; cursor: pointer; }
+
+        /* التصميم الرئيسي */
+        .main-container { display: flex; flex: 1; }
+        
+        /* القائمة الجانبية */
+        .sidebar { width: 250px; background: white; border-left: 1px solid #ddd; padding: 20px; }
+        .sidebar h3 { color: var(--primary-color); border-bottom: 2px solid var(--accent-color); padding-bottom: 10px; }
+        .sidebar ul { list-style: none; padding: 0; }
+        .sidebar li { padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; transition: 0.3s; }
+        .sidebar li:hover { background: #eef2f7; color: var(--accent-color); }
+
+        /* المنطقة المركزية */
+        .content { flex: 1; padding: 40px; text-align: center; }
+        .ad-space { background: white; padding: 50px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        
+        /* زر الموعد التفاعلي */
+        .appointment-box { background: #fff3cd; border: 2px dashed #ffc107; padding: 30px; border-radius: 20px; display: inline-block; }
+        .appointment-btn { background: #28a745; color: white; border: none; padding: 15px 30px; font-size: 1.2rem; border-radius: 50px; cursor: pointer; margin-top: 15px; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Orth0 - Psy Teck</h1>
-        <p>نظام متعددة الخدمات إدارياً وتقنياً لإدارة وتنظيم وأتمتة العمل النفسي والأرطفوني</p>
+
+    <nav class="navbar">
+        <div class="logo"><h2>Orth0 - Psy Teck</h2></div>
+        <div class="nav-links">
+            <button>دخول الإدارة</button>
+            <button>دخول Ortho Teck</button>
+            <button>دخول Psy Teck</button>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <h3>الأقسام الرئيسية</h3>
+            <ul>
+                <li>📊 قسم الإدارة والتسيير</li>
+                <li>🗣️ قسم Ortho Teck</li>
+                <li>🧠 قسم Psy Teck</li>
+                <li>🛒 شراء المنصة / اشتراك</li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="ad-space">
+                <h1>نظام مـتـعدد الخـدمات</h1>
+                <p>إدارياً وتقنياً لإدارة وتنظيم وأتمتة العمل النفسي والأرطفوني</p>
+                <div style="background: #eee; height: 200px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    [ مساحة عرض النشاطات والإعلانات ]
+                </div>
+            </div>
+
+            <div class="appointment-box">
+                <h3>بوني الطفل 🧸</h3>
+                <p>هل تريد أخذ موعد؟</p>
+                <button class="appointment-btn">نعم، أريد موعداً!</button>
+            </div>
+        </main>
     </div>
+
 </body>
-                             </html>
+</html>
