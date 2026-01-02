@@ -121,16 +121,37 @@
 
             <div class="form-group">
                 <label>نوع المشكلة باختصار:</label>
-                <textarea rows="3" placeholder="اكتب نبذة مختصرة عن الحالة..."></textarea>
+                <textarea id="problem" rows="3" placeholder="اكتب نبذة مختصرة عن الحالة..."></textarea>
             </div>
 
-            <p class="note">للاستفادة من خدمات المتابعة، المرافقة، والإرشاد المتكاملة</p>
-            
             <button type="submit" class="submit-btn">تسجيل الحجز 📅</button>
+
+            <div style="margin-top: 30px; text-align: center; border-top: 1px solid #ddd; padding-top: 20px;">
+                <p style="font-size: 1rem; color: #2c3e50; font-weight: bold;">
+                    للاستفادة من خدماتنا في الإرشاد والمرافقة والمتابعة:
+                </p>
+                <p style="font-size: 0.9rem; color: #666;">يتم فتح حساب خاص لك بالعيادة في أول زيارة</p>
+                
+                <button type="button" onclick="showAccountNotice()" style="background: var(--accent-grad); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px;">
+                    فتح حساب المفحوص / ولي المفحوص 👤
+                </button>
+            </div>
         </form>
     </div>
 
-    <script>
+<script>
+    // ... وظيفة toggleSection تبقى كما هي ...
+
+    function showAccountNotice() {
+        alert("تنبيه: يتم تفعيل هذا الحساب رسمياً في مقر العيادة لضمان خصوصية البيانات.");
+    }
+
+    function handleSubmit(e) {
+        e.preventDefault();
+        // هنا سنضيف لاحقاً الكود الذي يرسل البيانات لقاعدة البيانات
+        alert("تم إرسال طلب الحجز بنجاح! ستجد إشعاراً في بوابة الإدارة قريباً.");
+    }
+</script>
         function toggleSection(isParent) {
             const section = document.getElementById('child-section');
             const mainLabel = document.getElementById('main-label');
