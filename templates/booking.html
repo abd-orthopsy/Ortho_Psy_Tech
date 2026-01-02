@@ -8,13 +8,13 @@
         :root {
             --primary-grad: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
             --accent: #3498db;
+            --accent-grad: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
             --success: #27ae60;
             --bg: #f8f9fa;
         }
 
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg); margin: 0; padding: 0; }
 
-        /* شريط علوي مع زر العودة */
         .top-nav { background: var(--primary-grad); color: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; }
         .back-btn { background: rgba(255,255,255,0.2); color: white; text-decoration: none; padding: 8px 15px; border-radius: 5px; font-size: 0.9rem; }
         .back-btn:hover { background: rgba(255,255,255,0.3); }
@@ -31,13 +31,10 @@
         .radio-group { display: flex; gap: 20px; background: #f0f4f8; padding: 15px; border-radius: 8px; margin-bottom: 25px; }
         .radio-option { display: flex; align-items: center; gap: 8px; cursor: pointer; }
 
-        /* قسم معلومات الطفل - مخفي افتراضياً */
         #child-section { background: #e8f4fd; padding: 20px; border-radius: 10px; border-right: 5px solid var(--accent); margin-bottom: 20px; display: none; }
 
         .submit-btn { background: var(--success); color: white; border: none; padding: 15px; width: 100%; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
         .submit-btn:hover { transform: scale(1.02); background: #219150; }
-
-        .note { font-size: 0.9rem; color: #666; text-align: center; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -139,19 +136,8 @@
         </form>
     </div>
 
-<script>
-    // ... وظيفة toggleSection تبقى كما هي ...
-
-    function showAccountNotice() {
-        alert("تنبيه: يتم تفعيل هذا الحساب رسمياً في مقر العيادة لضمان خصوصية البيانات.");
-    }
-
-    function handleSubmit(e) {
-        e.preventDefault();
-        // هنا سنضيف لاحقاً الكود الذي يرسل البيانات لقاعدة البيانات
-        alert("تم إرسال طلب الحجز بنجاح! ستجد إشعاراً في بوابة الإدارة قريباً.");
-    }
-</script>
+    <script>
+        // وظيفة إظهار/إخفاء قسم الطفل
         function toggleSection(isParent) {
             const section = document.getElementById('child-section');
             const mainLabel = document.getElementById('main-label');
@@ -165,10 +151,16 @@
             }
         }
 
+        // وظيفة إظهار تنبيه فتح الحساب
+        function showAccountNotice() {
+            alert("تنبيه: يتم تفعيل هذا الحساب رسمياً في مقر العيادة لضمان خصوصية البيانات.");
+        }
+
+        // وظيفة إرسال النموذج (مؤقتة حتى نربط قاعدة البيانات)
         function handleSubmit(e) {
             e.preventDefault();
             alert("تنبيه هام:\nتفتح العيادة حساباً خاصاً بالأولياء والمفحوصين في أول يوم لهم بالزيارة حضورياً.\nسنتصل بك قريباً لتأكيد الموعد!");
         }
     </script>
 </body>
-  </html>
+</html>
