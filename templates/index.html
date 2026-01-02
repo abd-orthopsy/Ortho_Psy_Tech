@@ -6,56 +6,48 @@
     <title>Ortho_Psy Tech</title>
     <style>
         :root {
-            --primary: #2c3e50;
-            --accent: #3498db;
-            --success: #27ae60;
-            --bg: #f8f9fa;
+            --primary-grad: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            --accent-grad: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            --success-grad: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            --bg: #f0f2f5;
+            --footer-bg: #1a1a1a;
         }
         
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background-color: var(--bg); color: var(--primary); }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background-color: var(--bg); color: #2c3e50; min-height: 100vh; display: flex; flex-direction: column; }
 
-        /* شريط علوي احترافي */
-        .navbar { background: var(--primary); color: white; padding: 20px 5%; display: flex; flex-direction: column; align-items: center; border-bottom: 4px solid var(--accent); }
-        
-        .logo-area { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
-        
-        /* رسم الشعار البرمجي المطور (بناءً على الصورة المرفقة) */
-        .logo-box { width: 80px; height: 80px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--accent); }
-        
-        .gates-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 600px; }
-        .gate-btn { background: var(--accent); border: none; color: white; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .gate-btn:hover { background: #2980b9; transform: scale(1.02); }
+        /* شريط علوي أنيق */
+        .navbar { background: var(--primary-grad); color: white; padding: 15px 5%; border-bottom: 4px solid #3498db; text-align: center; }
+        .header-content { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 15px; }
+        .logo-placeholder { width: 70px; height: 70px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 2px solid #3498db; color: #999; font-size: 0.7rem; }
+        .main-title { font-size: 2.2rem; margin: 0; white-space: nowrap; }
 
-        .container { max-width: 900px; margin: 30px auto; padding: 0 15px; text-align: center; }
+        /* البوابات */
+        .gates-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 600px; margin: 0 auto; }
+        .gate-btn { background: var(--accent-grad); border: none; color: white; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.3s; }
+        .gate-btn:hover { transform: translateY(-2px); }
 
-        /* مكان العبارة الوصفية الجديد */
-        .description-text { font-size: 1.5rem; font-weight: bold; margin-bottom: 20px; color: var(--primary); border-right: 5px solid var(--accent); padding-right: 15px; display: inline-block; }
+        .container { max-width: 900px; margin: 10px auto; padding: 0 15px; text-align: center; flex: 1; }
+        .description-text { font-size: 1.4rem; font-weight: bold; margin: 15px 0; color: #34495e; border-bottom: 2px solid #3498db; display: inline-block; padding-bottom: 5px; }
 
-        .slider-box { background: #fff; border-radius: 15px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.1); margin-bottom: 30px; height: 350px; display: flex; align-items: center; justify-content: center; border: 1px solid #ddd; }
+        /* إطارات المحتوى */
+        .slider-box { background: white; border-radius: 15px; height: 220px; display: flex; align-items: center; justify-content: center; border: 1px solid #ddd; margin-bottom: 15px; }
+        .appointment-card { background: white; border-radius: 20px; padding: 20px; border: 1px solid #eee; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .appointment-btn { background: var(--success-grad); color: white; border: none; padding: 18px 50px; font-size: 1.4rem; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; max-width: 450px; transition: 0.3s; margin-top: 10px; }
 
-        .appointment-card { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 2px solid #eee; }
-        .appointment-btn { background: var(--success); color: white; border: none; padding: 20px 50px; font-size: 1.5rem; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; max-width: 500px; transition: 0.3s; }
-        .appointment-btn:hover { background: #219150; box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4); }
+        /* الشريط الأسود السفلي (Footer) */
+        .footer { background: var(--footer-bg); color: #bdc3c7; padding: 20px 5%; text-align: center; margin-top: 30px; font-size: 0.9rem; }
+        .footer-info { display: flex; justify-content: center; gap: 30px; margin-bottom: 10px; flex-wrap: wrap; }
+        .footer-info span { display: flex; align-items: center; gap: 5px; }
     </style>
 </head>
 <body>
 
     <header class="navbar">
-        <div class="logo-area">
-            <div class="logo-box">
-                <svg viewBox="0 0 100 100" width="70" height="70">
-                    <path d="M30 80 Q25 50 35 25 Q55 10 80 25 Q90 50 80 80 L30 80" fill="white" stroke="#2c3e50" stroke-width="2"/>
-                    <path d="M45 35 Q55 25 65 35 M50 45 Q60 35 70 45 M40 55 Q50 45 60 55" fill="none" stroke="#3498db" stroke-width="1.5" stroke-linecap="round"/>
-                    <path d="M35 65 L42 62 L42 68 Z" fill="#2c3e50"/>
-                    <path d="M25 65 Q15 65 5 55 M22 60 Q12 60 8 50 M20 70 Q10 70 2 60" fill="none" stroke="#3498db" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
-                </svg>
-            </div>
-            <div style="text-align: right;">
-                <h1 style="margin: 0; font-size: 2.2rem;">Ortho_Psy Tech</h1>
-            </div>
+        <div class="header-content">
+            <div class="logo-placeholder">مساحة<br>الشعار</div>
+            <h1 class="main-title">Ortho_Psy Tech</h1>
         </div>
-
         <div class="gates-grid">
             <button class="gate-btn">بوابة الإدارة</button>
             <button class="gate-btn">بوابة الباحثين 🎓</button>
@@ -66,17 +58,31 @@
 
     <div class="container">
         <div class="description-text">نظام متكامل لأتمتة ورقمنة العمل العيادي الأرطفوني</div>
-
+        
         <div class="slider-box">
-            <h2 style="color: #95a5a6;">[ مساحة عرض النشاطات والإعلانات ]</h2>
+            <h3 style="color: #bdc3c7;">[ شريط العروض والنشاطات المتحرك ]</h3>
         </div>
 
         <section class="appointment-card">
-            <p style="font-size: 1.3rem; margin-bottom: 10px;">أنت ولي طفل أو راشد تحتاج خدمات أرطفونية ونفسية؟</p>
-            <h2 style="color: var(--success); font-size: 2.2rem; margin-bottom: 25px;">احجز موعدك من هنا</h2>
+            <p style="font-size: 1.2rem; margin: 0;">أنت ولي طفل أو راشد تحتاج خدمات أرطفونية ونفسية؟</p>
+            <h2 style="color: #27ae60; font-size: 1.8rem; margin: 5px 0 15px 0;">احجز موعدك من هنا</h2>
             <button class="appointment-btn">حجز الموعد الآن 📅</button>
         </section>
     </div>
 
+    <footer class="footer">
+        <div class="footer-info">
+            <span>📍 الموقع: الجزائر</span>
+            <span>📧 البريد: contact@orthopsytech.com</span>
+            <span>📞 الهاتف: +213 XXX XX XX XX</span>
+        </div>
+        <hr style="border: 0; border-top: 1px solid #333; margin: 15px 0;">
+        <p>&copy; <span id="year"></span> Ortho_Psy Tech Clinic. جميع الحقوق محفوظة.</p>
+    </footer>
+
+    <script>
+        // تحديث السنة تلقائياً
+        document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
 </body>
 </html>
