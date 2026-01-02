@@ -1,1 +1,153 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حجز موعد - Ortho_Psy Tech</title>
+    <style>
+        :root {
+            --primary-grad: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            --accent: #3498db;
+            --success: #27ae60;
+            --bg: #f8f9fa;
+        }
 
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg); margin: 0; padding: 0; }
+
+        /* شريط علوي مع زر العودة */
+        .top-nav { background: var(--primary-grad); color: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; }
+        .back-btn { background: rgba(255,255,255,0.2); color: white; text-decoration: none; padding: 8px 15px; border-radius: 5px; font-size: 0.9rem; }
+        .back-btn:hover { background: rgba(255,255,255,0.3); }
+
+        .form-container { max-width: 700px; margin: 30px auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        
+        h2 { color: var(--primary-grad); text-align: center; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #444; }
+        
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+        
+        .radio-group { display: flex; gap: 20px; background: #f0f4f8; padding: 15px; border-radius: 8px; margin-bottom: 25px; }
+        .radio-option { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+
+        /* قسم معلومات الطفل - مخفي افتراضياً */
+        #child-section { background: #e8f4fd; padding: 20px; border-radius: 10px; border-right: 5px solid var(--accent); margin-bottom: 20px; display: none; }
+
+        .submit-btn { background: var(--success); color: white; border: none; padding: 15px; width: 100%; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .submit-btn:hover { transform: scale(1.02); background: #219150; }
+
+        .note { font-size: 0.9rem; color: #666; text-align: center; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <nav class="top-nav">
+        <div style="font-weight: bold; font-size: 1.2rem;">Ortho_Psy Tech</div>
+        <a href="/" class="back-btn">🔙 العودة للرئيسية</a>
+    </nav>
+
+    <div class="form-container">
+        <h2>استمارة حجز موعد جديد</h2>
+
+        <div class="form-group">
+            <label>هل أنت؟</label>
+            <div class="radio-group">
+                <label class="radio-option">
+                    <input type="radio" name="user_type" value="adult" onclick="toggleSection(false)" checked> راشد
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="user_type" value="parent" onclick="toggleSection(true)"> ولي طفل
+                </label>
+            </div>
+        </div>
+
+        <form id="bookingForm" onsubmit="handleSubmit(event)">
+            <div class="form-group">
+                <label id="main-label">اسم ولقب الراشد:</label>
+                <input type="text" placeholder="الاسم واللقب الكامل" required>
+            </div>
+
+            <div style="display: flex; gap: 15px;">
+                <div class="form-group" style="flex: 1;">
+                    <label>تاريخ الميلاد:</label>
+                    <input type="date" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>الجنس:</label>
+                    <select required>
+                        <option value="male">ذكر</option>
+                        <option value="female">أنثى</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>مكان الإقامة:</label>
+                <input type="text" placeholder="الولاية / البلدية" required>
+            </div>
+
+            <div style="display: flex; gap: 15px;">
+                <div class="form-group" style="flex: 1;">
+                    <label>رقم الهاتف:</label>
+                    <input type="tel" placeholder="0XXXXXXXXX" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>البريد الإلكتروني:</label>
+                    <input type="email" placeholder="example@mail.com">
+                </div>
+            </div>
+
+            <div id="child-section">
+                <h3 style="margin-top: 0; color: var(--accent);">معلومات الطفل 👶</h3>
+                <div class="form-group">
+                    <label>اسم ولقب الطفل:</label>
+                    <input type="text" placeholder="الاسم واللقب الكامل للطفل">
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>تاريخ ميلاد الطفل:</label>
+                        <input type="date">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>جنس الطفل:</label>
+                        <select>
+                            <option value="male">ذكر</option>
+                            <option value="female">أنثى</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>نوع المشكلة باختصار:</label>
+                <textarea rows="3" placeholder="اكتب نبذة مختصرة عن الحالة..."></textarea>
+            </div>
+
+            <p class="note">للاستفادة من خدمات المتابعة، المرافقة، والإرشاد المتكاملة</p>
+            
+            <button type="submit" class="submit-btn">تسجيل الحجز 📅</button>
+        </form>
+    </div>
+
+    <script>
+        function toggleSection(isParent) {
+            const section = document.getElementById('child-section');
+            const mainLabel = document.getElementById('main-label');
+            
+            if (isParent) {
+                section.style.display = 'block';
+                mainLabel.innerText = "اسم ولقب الولي:";
+            } else {
+                section.style.display = 'none';
+                mainLabel.innerText = "اسم ولقب الراشد:";
+            }
+        }
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            alert("تنبيه هام:\nتفتح العيادة حساباً خاصاً بالأولياء والمفحوصين في أول يوم لهم بالزيارة حضورياً.\nسنتصل بك قريباً لتأكيد الموعد!");
+        }
+    </script>
+</body>
+  </html>
