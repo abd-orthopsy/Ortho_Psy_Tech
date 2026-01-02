@@ -33,7 +33,25 @@
         /* إطارات المحتوى */
         .slider-box { background: white; border-radius: 15px; height: 220px; display: flex; align-items: center; justify-content: center; border: 1px solid #ddd; margin-bottom: 15px; }
         .appointment-card { background: white; border-radius: 20px; padding: 20px; border: 1px solid #eee; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        .appointment-btn { background: var(--success-grad); color: white; border: none; padding: 18px 50px; font-size: 1.4rem; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; max-width: 450px; transition: 0.3s; margin-top: 10px; }
+        
+        /* تعديل تنسيق الزر ليعمل كرابط */
+        .appointment-btn { 
+            background: var(--success-grad); 
+            color: white; 
+            text-decoration: none;
+            display: inline-block;
+            padding: 18px 50px; 
+            font-size: 1.4rem; 
+            border-radius: 50px; 
+            font-weight: bold; 
+            width: 100%; 
+            max-width: 450px; 
+            transition: 0.3s; 
+            margin-top: 10px; 
+            border: none;
+            cursor: pointer;
+        }
+        .appointment-btn:hover { transform: scale(1.03); opacity: 0.9; }
 
         /* الشريط الأسود السفلي (Footer) */
         .footer { background: var(--footer-bg); color: #bdc3c7; padding: 20px 5%; text-align: center; margin-top: 30px; font-size: 0.9rem; }
@@ -66,7 +84,7 @@
         <section class="appointment-card">
             <p style="font-size: 1.2rem; margin: 0;">أنت ولي طفل أو راشد تحتاج خدمات أرطفونية ونفسية؟</p>
             <h2 style="color: #27ae60; font-size: 1.8rem; margin: 5px 0 15px 0;">احجز موعدك من هنا</h2>
-            <button class="appointment-btn">حجز الموعد الآن 📅</button>
+            <a href="/booking" class="appointment-btn">حجز الموعد الآن 📅</a>
         </section>
     </div>
 
