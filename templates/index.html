@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ortho_Psy Tech | النسخة الملكية</title>
+    <title>Ortho_Psy Tech Clinic</title>
     <style>
         :root {
             --brand-bg: #2c3e50;
@@ -21,12 +21,12 @@
             margin: 0; padding: 0;
             background-color: white; 
             height: 100vh; 
-            overflow: hidden; 
             display: flex;
             flex-direction: column;
+            overflow: hidden; /* يضمن بقاء كل شيء في شاشة واحدة */
         }
 
-        /* 1. الهيدر الملكي */
+        /* 1. الهيدر */
         .top-header {
             background: var(--brand-bg);
             padding: 12px 5%;
@@ -43,15 +43,16 @@
         }
         .menu-icon { font-size: 22px; color: var(--gold); }
 
-        /* 2. منطقة النصوص (متصلة بالهيدر) */
+        /* 2. منطقة النصوص */
         .promo-zone { 
             background: var(--text-zone-bg);
-            padding: 8px 0;
+            padding: 10px 0;
             text-align: center;
             border-bottom: 2px solid #ddd;
+            flex-shrink: 0;
         }
-        .promo-zone h2 { margin: 0; color: var(--brand-bg); font-size: 1.2rem; }
-        .promo-zone p { margin: 3px 0 0; font-size: 1.05rem; color: var(--accent-blue); font-weight: 800; }
+        .promo-zone h2 { margin: 0; color: var(--brand-bg); font-size: 1.25rem; }
+        .promo-zone p { margin: 4px 0 0; font-size: 1.05rem; color: var(--accent-blue); font-weight: 800; }
 
         /* زر الموعد المتحرك */
         .floating-booking { 
@@ -67,33 +68,40 @@
         }
         @keyframes swim { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(12px); } }
 
-        /* 3. شريط العروض (قلب المنصة) */
+        /* 3. شريط العروض (مرن ليأخذ المساحة المتاحة) */
         .hero-slider {
-            width: 100%; flex: 1.5; /* تمدد متوازن */
+            width: 100%; 
+            flex-grow: 1; /* يأخذ كل المساحة المتبقية بين النصوص والفوتر */
             background: var(--slider-bg); 
             display: flex; align-items: center; justify-content: center;
             border-bottom: 2px solid #ddd;
         }
 
-        /* 4. الفوتر الأسود (مرتفع وواضح) */
+        /* 4. الفوتر (قوي وثابت الظهور) */
+        footer {
+            width: 100%;
+            flex-shrink: 0; /* يمنع الفوتر من الاختفاء أو التقلص */
+        }
         .footer-main { 
             background: var(--footer-dark); color: #ecf0f1; 
             padding: 15px 5%; width: 100%;
-            display: flex; flex-direction: column; justify-content: center;
         }
         .footer-info { 
             display: flex; flex-direction: column; 
             align-items: center; gap: 4px; font-size: 1rem;
         }
         
-        /* عبارة الحقوق بالخلفية المتدرجة الجميلة */
+        /* عبارة الحقوق المعدلة مع كلمة Clinic */
         .copyright { 
             background: linear-gradient(to right, #000000, #2c3e50, #000000); 
-            color: var(--gold); padding: 10px; 
-            text-align: center; font-size: 0.85rem; width: 100%;
-            border-top: 1px solid #333;
+            color: var(--gold); 
+            padding: 12px; 
+            text-align: center; 
+            font-size: 0.85rem; 
+            width: 100%;
+            border-top: 1px solid #444;
             font-weight: bold;
-            box-shadow: 0 -3px 10px rgba(0,0,0,0.3);
+            display: block; /* يضمن معاملته كعنصر مستقل */
         }
 
         /* القائمة الجانبية */
@@ -127,6 +135,29 @@
         <p>حلول رقمية ذكية للمفحوصين، وللمختصين والباحثين</p>
     </div>
 
+    <div class="floating-booking">
+        <a href="/booking" class="appointment-btn">حجز<br>موعد 📅</a>
+    </div>
+
+    <div class="hero-slider">
+        <div style="text-align: center; color: #9ab4bf;">
+            <h3 style="margin:0; font-size: 1.6rem;">[ شريط العروض والنشاطات ]</h3>
+            <p style="margin:8px 0 0; font-size: 1.1rem;">واجهة عرض إعلانات العيادة</p>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-main">
+            <div class="footer-info">
+                <span>📧 contact@orthopsytech.com</span>
+                <span>📞 +213 XXX XX XX XX</span>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; <span id="year"></span> Ortho_Psy Tech Clinic. جميع الحقوق محفوظة وتخضع للحماية القانونية.
+        </div>
+    </footer>
+
     <div id="mySidebar" class="sidebar">
         <span style="position: absolute; top: 10px; left: 15px; color: white; cursor: pointer; font-size: 25px;" onclick="closeNav()">×</span>
         <div class="sidebar-header">
@@ -142,36 +173,10 @@
         <a href="/buy-platform" style="color: var(--gold); font-size: 1.1rem; margin-top: 30px; border: 2px dashed var(--gold); padding: 8px;">أطلب منصتك<br>لتسير عيادتك</a>
     </div>
 
-    <div class="floating-booking">
-        <a href="/booking" class="appointment-btn">حجز<br>موعد 📅</a>
-    </div>
-
-    <div id="main" style="flex: 1; display: flex; flex-direction: column;">
-        <div class="hero-slider">
-            <div style="text-align: center; color: #9ab4bf;">
-                <h3 style="margin:0; font-size: 1.6rem;">[ شريط العروض والنشاطات ]</h3>
-                <p style="margin:8px 0 0; font-size: 1.1rem;">واجهة عرض إعلانات العيادة</p>
-            </div>
-        </div>
-
-        <footer>
-            <div class="footer-main">
-                <div class="footer-info">
-                    <span>📧 contact@orthopsytech.com</span>
-                    <span>📞 +213 XXX XX XX XX</span>
-                </div>
-            </div>
-            <div class="copyright">
-                &copy; <span id="year"></span> Ortho_Psy Tech Clinic. جميع الحقوق محفوظة وتخضع للحماية القانونية.
-            </div>
-        </footer>
-    </div>
-
     <script>
         function openNav() { document.getElementById("mySidebar").style.width = "180px"; }
         function closeNav() { document.getElementById("mySidebar").style.width = "0"; }
         document.getElementById("year").textContent = new Date().getFullYear();
-        document.getElementById("main").onclick = function() { closeNav(); }
     </script>
 </body>
 </html>
