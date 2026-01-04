@@ -6,82 +6,110 @@
     <title>Ortho_Psy Tech</title>
     <style>
         :root {
-            --brand-color: #2c3e50;
+            --brand-bg: #2c3e50; /* خلفية العنوان فخمة */
             --accent-blue: #3498db;
             --gold: #f1c40f;
             --sidebar-bg: #1a252f;
             --footer-dark: #1a1a1a;
+            --rights-bg: #111; /* خلفية الحقوق */
         }
         
         * { box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background-color: #fcfcfc; overflow-x: hidden; }
 
-        /* الهيدر المبسط */
+        /* الهيدر الضخم المتصل */
         .top-header {
-            background: white;
-            padding: 10px 5%;
+            background: var(--brand-bg);
+            padding: 30px 5%;
             display: flex;
             align-items: center;
-            justify-content: flex-start; /* ليكون الهامبرغر بجانب العنوان */
-            gap: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: fixed; top: 0; width: 100%; z-index: 1000;
+            justify-content: center; /* العنوان في الوسط تماماً */
+            position: relative;
+            z-index: 1000;
         }
 
-        .brand-title { font-size: 1.8rem; font-weight: 800; color: var(--brand-color); margin: 0; }
+        .brand-title { 
+            font-size: 3.2rem; /* تكبير الاسم */
+            font-weight: 900; 
+            color: white; 
+            margin: 0;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
 
         /* أيقونة القائمة */
-        .menu-icon { font-size: 24px; cursor: pointer; color: var(--brand-color); transition: 0.3s; }
-        .menu-icon:hover { color: var(--accent-blue); }
+        .menu-icon { 
+            font-size: 35px; 
+            cursor: pointer; 
+            color: var(--gold); 
+            position: absolute; 
+            right: 5%; 
+            transition: 0.3s; 
+        }
 
-        /* الشريط الجانبي النحيف جداً */
+        /* الشريط الجانبي النحيف جداً والكلمات الضخمة */
         .sidebar {
             height: 100%; width: 0; position: fixed; z-index: 2000;
             top: 0; right: 0; background-color: var(--sidebar-bg);
-            overflow-x: hidden; transition: 0.3s; padding-top: 40px;
-            text-align: center; box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+            overflow-x: hidden; transition: 0.3s; padding-top: 20px;
+            text-align: center; box-shadow: -2px 0 15px rgba(0,0,0,0.5);
         }
 
-        /* الكتابة العمودية الإبداعية */
-        .sidebar-header { margin-bottom: 20px; line-height: 1.2; font-weight: 900; font-size: 0.9rem; }
-        .sidebar-header .gold { color: var(--gold); display: block; }
-        .sidebar-header .white { color: white; display: block; font-size: 0.7rem; }
+        .sidebar-header { margin-bottom: 30px; line-height: 1; font-weight: 900; }
+        .sidebar-header span { 
+            display: block; 
+            width: 100%; 
+            font-size: 1.8rem; /* كلمات تملأ العرض */
+            padding: 5px 0;
+        }
+        .sidebar-header .gold { color: var(--gold); }
+        .sidebar-header .white { color: white; }
 
         .sidebar a {
-            padding: 12px 5px; text-decoration: none; font-size: 0.85rem;
+            padding: 15px 5px; text-decoration: none; font-size: 1.1rem;
             color: #bdc3c7; display: block; transition: 0.3s;
             border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-weight: bold;
         }
-        .sidebar a:hover { color: white; background: rgba(255,255,255,0.1); }
-        .sidebar .closebtn { position: absolute; top: 5px; left: 10px; font-size: 20px; color: white; cursor: pointer; }
+        .sidebar a:hover { color: white; background: var(--accent-blue); }
+        .sidebar .closebtn { position: absolute; top: 10px; left: 10px; font-size: 25px; color: white; cursor: pointer; }
 
-        /* المحتوى المركزي */
-        .main-container { margin-top: 80px; padding-bottom: 50px; transition: 0.3s; }
+        /* المحتوى المركزي المتصل بالهيدر */
+        .main-container { margin-top: 0; padding-bottom: 50px; transition: 0.3s; }
 
         .hero-slider {
-            width: 95%; height: 320px; margin: 0 auto;
-            background: white; border-radius: 10px;
+            width: 100%; height: 350px; /* ملتصق بالأعلى */
+            background: white; border-bottom: 1px solid #ddd;
             display: flex; align-items: center; justify-content: center;
-            border: 1px solid #eee; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
 
-        .promo-text { margin-top: 15px; text-align: center; }
-        .promo-text h2 { margin: 0; color: var(--brand-color); font-size: 1.5rem; }
-        .promo-text p { margin: 5px 0 0; font-size: 1.1rem; color: var(--accent-blue); font-weight: bold; }
+        .promo-text { margin-top: 30px; text-align: center; }
+        .promo-text h2 { margin: 0; color: var(--brand-bg); font-size: 1.8rem; }
+        .promo-text p { margin: 10px 0; font-size: 1.3rem; color: var(--accent-blue); font-weight: 700; }
 
-        /* الفوتر المطور */
-        .footer-main { background: var(--footer-dark); color: #bdc3c7; padding: 30px 5%; margin-top: 50px; }
-        .footer-info { display: flex; justify-content: center; gap: 25px; flex-wrap: wrap; font-size: 0.85rem; }
-        .copyright { background: #111; color: #555; padding: 15px; text-align: center; font-size: 0.75rem; }
+        /* زر الموعد العائم والمتحرك يساراً */
+        .floating-booking { 
+            position: fixed; bottom: 100px; left: 20px; /* يسار الصفحة */
+            z-index: 1500; width: 180px; 
+            animation: swim 3s ease-in-out infinite; /* حركة الصعود والنزول */
+        }
+        
+        @keyframes swim {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
 
-        /* زر الموعد العائم */
-        .floating-booking { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 500; width: 90%; max-width: 380px; }
         .appointment-btn {
             background: linear-gradient(135deg, #27ae60, #2ecc71);
-            color: white; text-decoration: none; display: block; padding: 14px;
-            border-radius: 50px; font-size: 1.2rem; font-weight: bold; text-align: center;
-            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+            color: white; text-decoration: none; display: block; padding: 15px;
+            border-radius: 15px; font-size: 1rem; font-weight: bold; text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
+
+        /* الفوتر */
+        .footer-main { background: var(--footer-dark); color: #bdc3c7; padding: 40px 5%; margin-top: 50px; }
+        .footer-info { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
+        .copyright { background: #000; color: var(--gold); padding: 15px; text-align: center; font-size: 0.8rem; border-top: 1px solid #222; }
     </style>
 </head>
 <body>
@@ -103,14 +131,14 @@
         <a href="/ortho-tech">Ortho Tech</a>
         <a href="/psy-tech">Psy Tech</a>
         <a href="/research-tech">Research Tech</a>
-        <a href="/buy-platform" style="font-size: 0.75rem; line-height: 1.3; color: var(--gold);">أطلب منصتك<br>لتسير عيادتك</a>
+        <a href="/buy-platform" style="color: var(--gold); font-size: 0.9rem;">أطلب منصتك<br>لتسير عيادتك</a>
     </div>
 
     <div id="main" class="main-container">
         <div class="hero-slider">
-            <div style="text-align: center; color: #ccc;">
-                <h3>شريط العروض والنشاطات</h3>
-                <p>(تحكم موظفة الاستقبال)</p>
+            <div style="text-align: center; color: #bbb;">
+                <h3 style="font-size: 1.5rem;">[ شريط العروض والنشاطات ]</h3>
+                <p>مساحة إعلانات العيادة</p>
             </div>
         </div>
 
@@ -121,24 +149,24 @@
     </div>
 
     <div class="floating-booking">
-        <a href="/booking" class="appointment-btn">احجز موعدك الآن 📅</a>
+        <a href="/booking" class="appointment-btn">حجز موعد 📅</a>
     </div>
 
     <footer class="footer-main">
         <div class="footer-info">
-            <span>📍 الجزائر</span>
+            <span>📍 الموقع: الجزائر</span>
             <span>📧 contact@orthopsytech.com</span>
             <span>📞 +213 XXX XX XX XX</span>
         </div>
     </footer>
     <div class="copyright">
-        &copy; <span id="year"></span> Ortho_Psy Tech Clinic. جميع الحقوق محفوظة.
+        &copy; <span id="year"></span> Ortho_Psy Tech Clinic. جميع الحقوق محفوظة وتخضع للحماية القانونية.
     </div>
 
     <script>
         function openNav() {
-            document.getElementById("mySidebar").style.width = "120px"; // عرض نحيف جداً للكلمتين
-            document.getElementById("main").style.opacity = "0.4";
+            document.getElementById("mySidebar").style.width = "140px"; 
+            document.getElementById("main").style.opacity = "0.3";
         }
         function closeNav() {
             document.getElementById("mySidebar").style.width = "0";
