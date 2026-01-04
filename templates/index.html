@@ -11,60 +11,56 @@
             --gold: #f1c40f;
             --sidebar-bg: #1a252f;
             --footer-dark: #1a1a1a;
+            --slider-bg: #eef7fa; /* سماوي ورقي فاتح */
+            --text-zone-bg: #f2f1ef; /* بيج رمادي فاتح */
         }
         
         * { box-sizing: border-box; }
         body { 
             font-family: 'Segoe UI', Tahoma, sans-serif; 
             margin: 0; 
-            background-color: #fcfcfc; 
+            background-color: white; 
             height: 100vh; 
-            overflow: hidden; /* لمنع التمرير وجعل كل شيء في شاشة واحدة */
+            overflow: hidden; 
             display: flex;
             flex-direction: column;
         }
 
-        /* الهيدر المدمج */
+        /* الهيدر */
         .top-header {
             background: var(--brand-bg);
-            padding: 15px 2%;
+            padding: 12px 2%;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            width: fit-content;
-            margin: 0 auto;
-            border-bottom-left-radius: 15px;
-            border-bottom-right-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            width: 100%; /* ممتلئ العرض */
+            z-index: 1000;
         }
 
         .brand-title { 
-            font-size: 2.2rem; /* حجم مثالي لسطر واحد */
+            font-size: 2rem;
             font-weight: 900; 
             color: white; 
-            margin: 0 60px;
+            margin: 0;
             white-space: nowrap;
         }
 
-        /* أيقونة القائمة بخلفية مستقلة */
         .menu-box {
             position: absolute;
-            right: 10px;
+            right: 20px;
             background: linear-gradient(135deg, #34495e, #2c3e50);
-            padding: 8px 12px;
+            padding: 8px 15px;
             border-radius: 8px;
             cursor: pointer;
             border: 1px solid rgba(255,255,255,0.1);
-            transition: 0.3s;
         }
-        .menu-box:hover { background: var(--accent-blue); }
         .menu-icon { font-size: 24px; color: var(--gold); }
 
-        /* زر الموعد المربع المتحرك */
+        /* زر الموعد المربع */
         .floating-booking { 
             position: absolute; 
-            top: 80px; left: 20px; 
+            top: 75px; left: 20px; 
             z-index: 1500; 
             animation: swim 3s ease-in-out infinite;
         }
@@ -72,15 +68,15 @@
             background: linear-gradient(135deg, #27ae60, #2ecc71);
             color: white; text-decoration: none; 
             display: flex; align-items: center; justify-content: center;
-            width: 80px; height: 80px; /* شكل مربع */
-            border-radius: 12px; font-size: 0.9rem; font-weight: bold; text-align: center;
+            width: 75px; height: 75px;
+            border-radius: 12px; font-size: 0.85rem; font-weight: bold; text-align: center;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             line-height: 1.2;
         }
 
         @keyframes swim {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(15px); }
+            50% { transform: translateY(12px); }
         }
 
         /* القائمة الجانبية */
@@ -95,23 +91,42 @@
         .sidebar-header .white { color: white; }
         .sidebar a { padding: 12px 5px; text-decoration: none; color: #bdc3c7; display: block; font-size: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
-        /* المحتوى المركزي المضغوط */
-        .main-container { flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 10px 0; }
-
-        .hero-slider {
-            width: 90%; height: 220px; /* تقليل الارتفاع ليناسب الشاشة */
-            margin: 0 auto; background: white; border: 1px solid #eee;
-            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+        /* المحتوى المتصل */
+        .main-container { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            width: 100%;
         }
 
-        .promo-text { text-align: center; margin: 5px 0; }
-        .promo-text h2 { margin: 0; color: var(--brand-bg); font-size: 1.4rem; }
-        .promo-text p { margin: 2px 0; font-size: 1.2rem; color: var(--accent-blue); font-weight: 700; }
+        .hero-slider {
+            width: 100%; /* ملء العرض */
+            flex: 2; /* تأخذ مساحة أكبر */
+            background: var(--slider-bg); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 4px; /* مسافة 0.4 سم تقريباً */
+        }
 
-        /* الفوتر الملتصق */
-        .footer-main { background: var(--footer-dark); color: #bdc3c7; padding: 15px 5%; text-align: center; }
-        .footer-info { display: flex; justify-content: center; gap: 20px; font-size: 0.8rem; }
-        .copyright { background: #080808; color: var(--gold); padding: 8px; text-align: center; font-size: 0.75rem; }
+        .promo-zone { 
+            background: var(--text-zone-bg);
+            padding: 15px 0;
+            text-align: center;
+            margin-bottom: 4px; /* مسافة 0.4 سم تقريباً قبل الفوتر */
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .promo-zone h2 { margin: 0; color: var(--brand-bg); font-size: 1.5rem; }
+        .promo-zone p { margin: 5px 0 0; font-size: 1.2rem; color: var(--accent-blue); font-weight: 700; }
+
+        /* الفوتر المكتمل العرض */
+        .footer-main { background: var(--footer-dark); color: #bdc3c7; padding: 12px 5%; width: 100%; }
+        .footer-info { display: flex; justify-content: center; gap: 30px; font-size: 0.85rem; }
+        .copyright { background: #080808; color: var(--gold); padding: 6px; text-align: center; font-size: 0.75rem; width: 100%; }
     </style>
 </head>
 <body>
@@ -144,13 +159,13 @@
 
     <div id="main" class="main-container">
         <div class="hero-slider">
-            <div style="text-align: center; color: #bbb; font-size: 0.9rem;">
-                <h3>[ شريط العروض والنشاطات ]</h3>
-                <p>إعلانات العيادة</p>
+            <div style="text-align: center; color: #9ab4bf;">
+                <h3 style="margin:0; font-size: 1.4rem;">[ شريط العروض والنشاطات ]</h3>
+                <p style="margin:5px 0 0;">واجهة عرض إعلانات العيادة</p>
             </div>
         </div>
 
-        <div class="promo-text">
+        <div class="promo-zone">
             <h2>نحو رقمنة شاملة للممارسة العيادية الأرطفونية</h2>
             <p>حلول رقمية ذكية للمفحوصين، وللمختصين والباحثين</p>
         </div>
@@ -164,7 +179,7 @@
                 </div>
             </div>
             <div class="copyright">
-                &copy; <span id="year"></span> Ortho_Psy Tech clinic. جميع الحقوق محفوظة.
+                &copy; <span id="year"></span> Ortho_Psy Tech Clinic. جميع الحقوق محفوظة وتخضع للحماية القانونية.
             </div>
         </footer>
     </div>
