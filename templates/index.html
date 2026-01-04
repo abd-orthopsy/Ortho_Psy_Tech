@@ -11,8 +11,8 @@
             --gold: #f1c40f;
             --sidebar-bg: #1a252f;
             --footer-dark: #1a1a1a;
-            --slider-bg: #eef7fa; /* سماوي ورقي فاتح */
-            --text-zone-bg: #f2f1ef; /* بيج رمادي فاتح */
+            --slider-bg: #eef7fa;
+            --text-zone-bg: #f2f1ef;
         }
         
         * { box-sizing: border-box; }
@@ -29,17 +29,17 @@
         /* الهيدر */
         .top-header {
             background: var(--brand-bg);
-            padding: 12px 2%;
+            padding: 10px 2%;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            width: 100%; /* ممتلئ العرض */
+            width: 100%;
             z-index: 1000;
         }
 
         .brand-title { 
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 900; 
             color: white; 
             margin: 0;
@@ -50,17 +50,17 @@
             position: absolute;
             right: 20px;
             background: linear-gradient(135deg, #34495e, #2c3e50);
-            padding: 8px 15px;
+            padding: 6px 12px;
             border-radius: 8px;
             cursor: pointer;
             border: 1px solid rgba(255,255,255,0.1);
         }
-        .menu-icon { font-size: 24px; color: var(--gold); }
+        .menu-icon { font-size: 22px; color: var(--gold); }
 
         /* زر الموعد المربع */
         .floating-booking { 
             position: absolute; 
-            top: 75px; left: 20px; 
+            top: 70px; left: 15px; 
             z-index: 1500; 
             animation: swim 3s ease-in-out infinite;
         }
@@ -68,65 +68,75 @@
             background: linear-gradient(135deg, #27ae60, #2ecc71);
             color: white; text-decoration: none; 
             display: flex; align-items: center; justify-content: center;
-            width: 75px; height: 75px;
-            border-radius: 12px; font-size: 0.85rem; font-weight: bold; text-align: center;
+            width: 70px; height: 70px;
+            border-radius: 12px; font-size: 0.8rem; font-weight: bold; text-align: center;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             line-height: 1.2;
         }
 
         @keyframes swim {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(12px); }
+            50% { transform: translateY(10px); }
         }
 
-        /* القائمة الجانبية */
+        /* القائمة الجانبية المطورة */
         .sidebar {
             height: 100%; width: 0; position: fixed; z-index: 2000;
             top: 0; right: 0; background-color: var(--sidebar-bg);
-            overflow-x: hidden; transition: 0.3s; padding-top: 20px;
+            overflow-x: hidden; transition: 0.3s; padding-top: 15px;
             text-align: center;
         }
-        .sidebar-header span { display: block; width: 100%; font-size: 1.8rem; font-weight: 900; }
+        .sidebar-header { margin-bottom: 40px; } /* مساحة تحت العنوان */
+        .sidebar-header span { display: block; width: 100%; font-size: 1.8rem; font-weight: 900; line-height: 1; }
         .sidebar-header .gold { color: var(--gold); }
         .sidebar-header .white { color: white; }
-        .sidebar a { padding: 12px 5px; text-decoration: none; color: #bdc3c7; display: block; font-size: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+        .sidebar a {
+            padding: 15px 5px;
+            text-decoration: none;
+            color: white;
+            display: block;
+            font-size: 1.2rem; /* تكبير الخط */
+            font-weight: bold;
+            margin: 8px 5px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        /* خلفيات ملونة للأقسام */
+        .link-ortho { background: rgba(52, 152, 219, 0.2); border-right: 4px solid #3498db; }
+        .link-psy { background: rgba(155, 89, 182, 0.2); border-right: 4px solid #9b59b6; }
+        .link-research { background: rgba(46, 204, 113, 0.2); border-right: 4px solid #2ecc71; }
+        
+        .sidebar a:hover { transform: scale(1.05); background: var(--accent-blue); }
 
         /* المحتوى المتصل */
-        .main-container { 
-            flex: 1; 
-            display: flex; 
-            flex-direction: column; 
-            width: 100%;
-        }
+        .main-container { flex: 1; display: flex; flex-direction: column; width: 100%; }
 
         .hero-slider {
-            width: 100%; /* ملء العرض */
-            flex: 2; /* تأخذ مساحة أكبر */
+            width: 100%; flex: 2.5;
             background: var(--slider-bg); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             border-bottom: 1px solid #ddd;
-            margin-bottom: 4px; /* مسافة 0.4 سم تقريباً */
+            margin-bottom: 2px;
         }
 
         .promo-zone { 
             background: var(--text-zone-bg);
-            padding: 15px 0;
+            padding: 8px 0;
             text-align: center;
-            margin-bottom: 4px; /* مسافة 0.4 سم تقريباً قبل الفوتر */
+            margin-bottom: 2px;
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
-        .promo-zone h2 { margin: 0; color: var(--brand-bg); font-size: 1.5rem; }
-        .promo-zone p { margin: 5px 0 0; font-size: 1.2rem; color: var(--accent-blue); font-weight: 700; }
+        .promo-zone h2 { margin: 0; color: var(--brand-bg); font-size: 1.15rem; } /* تصغير الخط للبقاء في سطر */
+        .promo-zone p { margin: 3px 0 0; font-size: 1rem; color: var(--accent-blue); font-weight: 700; }
 
-        /* الفوتر المكتمل العرض */
-        .footer-main { background: var(--footer-dark); color: #bdc3c7; padding: 12px 5%; width: 100%; }
-        .footer-info { display: flex; justify-content: center; gap: 30px; font-size: 0.85rem; }
-        .copyright { background: #080808; color: var(--gold); padding: 6px; text-align: center; font-size: 0.75rem; width: 100%; }
+        /* الفوتر */
+        .footer-main { background: var(--footer-dark); color: #bdc3c7; padding: 10px 5%; width: 100%; }
+        .footer-info { display: flex; justify-content: center; gap: 25px; font-size: 0.75rem; }
+        .copyright { background: #080808; color: var(--gold); padding: 5px; text-align: center; font-size: 0.7rem; width: 100%; }
     </style>
 </head>
 <body>
@@ -147,10 +157,14 @@
             <span class="white">Research</span>
             <span class="gold">ZONE</span>
         </div>
-        <a href="/ortho-tech">Ortho Tech</a>
-        <a href="/psy-tech">Psy Tech</a>
-        <a href="/research-tech">Research Tech</a>
-        <a href="/buy-platform" style="color: var(--gold); font-size: 0.8rem;">أطلب منصتك<br>لتسير عيادتك</a>
+        
+        <a href="/ortho-tech" class="link-ortho">Ortho Tech</a>
+        <a href="/psy-tech" class="link-psy">Psy Tech</a>
+        <a href="/research-tech" class="link-research">Research Tech</a>
+        
+        <a href="/buy-platform" style="color: var(--gold); font-size: 1.1rem; margin-top: 25px; border: 1px dashed var(--gold);">
+            أطلب منصتك<br>لتسير عيادتك
+        </a>
     </div>
 
     <div class="floating-booking">
@@ -160,13 +174,13 @@
     <div id="main" class="main-container">
         <div class="hero-slider">
             <div style="text-align: center; color: #9ab4bf;">
-                <h3 style="margin:0; font-size: 1.4rem;">[ شريط العروض والنشاطات ]</h3>
-                <p style="margin:5px 0 0;">واجهة عرض إعلانات العيادة</p>
+                <h3 style="margin:0; font-size: 1.2rem;">[ شريط العروض والنشاطات ]</h3>
+                <p style="margin:2px 0 0; font-size: 0.8rem;">واجهة عرض إعلانات العيادة</p>
             </div>
         </div>
 
         <div class="promo-zone">
-            <h2>نحو رقمنة شاملة للممارسة العيادية الأرطفونية</h2>
+            <h2>نحو رقمنة شاملة للممارسة العيادية الأرطفونية والنفسية</h2>
             <p>حلول رقمية ذكية للمفحوصين، وللمختصين والباحثين</p>
         </div>
 
@@ -179,14 +193,14 @@
                 </div>
             </div>
             <div class="copyright">
-                &copy; <span id="year"></span> Ortho_Psy Tech Clinic. جميع الحقوق محفوظة وتخضع للحماية القانونية.
+                &copy; <span id="year"></span> Ortho_Psy Tech Clinic. جميع الحقوق محفوظة.
             </div>
         </footer>
     </div>
 
     <script>
         function openNav() {
-            document.getElementById("mySidebar").style.width = "140px";
+            document.getElementById("mySidebar").style.width = "160px";
             document.getElementById("main").style.opacity = "0.3";
         }
         function closeNav() {
