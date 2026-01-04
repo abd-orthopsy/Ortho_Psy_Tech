@@ -6,54 +6,53 @@
     <title>Ortho_Psy Tech</title>
     <style>
         :root {
-            --primary-dark: #1a252f;
+            --brand-color: #2c3e50;
             --accent-blue: #3498db;
-            --success-green: #27ae60;
-            --text-light: #ecf0f1;
-            --bg-gray: #f4f7f6;
+            --gold: #f1c40f;
+            --bg-gray: #f8f9fa;
+            --sidebar-bg: #2c3e50; /* لون كحلي متناغم */
         }
         
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background-color: var(--bg-gray); transition: 0.5s; overflow-x: hidden; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background-color: var(--bg-gray); }
 
-        /* الشريط العلوي الثابت */
-        .top-navbar {
+        /* شريط علوي بارتفاع مريح */
+        .header-area {
             background: white;
-            height: 70px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 5%;
-            position: fixed;
-            top: 0; width: 100%;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px 5%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 100;
         }
 
-        /* عنوان المنصة المطور */
         .brand-title {
-            font-size: 1.8rem;
-            font-weight: 900;
-            background: linear-gradient(to left, #2c3e50, #3498db);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            white-space: nowrap;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--brand-color);
+            margin: 0;
+            text-align: center;
         }
 
-        /* زر القائمة الخاص بالتقنية */
-        .specialty-btn {
-            background: var(--primary-dark);
+        /* زر القائمة الجديد والمطور */
+        .zone-btn {
+            background: #3d4e5f;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 5px 15px;
+            border-radius: 4px;
             cursor: pointer;
+            font-size: 0.85rem;
             font-weight: bold;
+            display: block;
+            margin-right: auto; /* يدفعه لأقصى اليمين */
+            margin-top: 5px;
             transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .specialty-btn:hover { background: var(--accent-blue); }
+        .zone-btn span.highlight { color: var(--gold); }
+        .zone-btn:hover { background: var(--accent-blue); }
 
-        /* القائمة الجانبية العمودية النحيفة */
+        /* القائمة الجانبية (نحيفة جداً - ربع العرض) */
         .sidebar {
             height: 100%;
             width: 0;
@@ -61,45 +60,41 @@
             z-index: 2000;
             top: 0;
             right: 0;
-            background-color: var(--primary-dark);
+            background-color: var(--sidebar-bg);
             overflow-x: hidden;
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            padding-top: 80px;
-            box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+            transition: 0.3s;
+            padding-top: 60px;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.2);
         }
 
         .sidebar a {
-            padding: 20px 25px;
+            padding: 15px 20px;
             text-decoration: none;
-            font-size: 1.1rem;
-            color: var(--text-light);
+            font-size: 1rem;
+            color: #ecf0f1;
             display: block;
             transition: 0.3s;
             border-bottom: 1px solid rgba(255,255,255,0.05);
             white-space: nowrap;
         }
-        .sidebar a:hover { background: var(--accent-blue); padding-right: 35px; }
+        .sidebar a:hover { background: var(--accent-blue); padding-right: 25px; }
+        .sidebar .closebtn { position: absolute; top: 10px; left: 15px; font-size: 25px; color: white; cursor: pointer; }
 
-        .sidebar .closebtn { position: absolute; top: 15px; left: 20px; font-size: 30px; color: white; cursor: pointer; }
-
-        /* مساحة المحتوى */
-        .main-content { margin-top: 90px; padding-bottom: 120px; }
-
-        /* شريط العروض المركزي الكبير */
+        /* شريط العروض (منزاح للأسفل قليلاً) */
         .hero-slider {
             width: 90%;
-            height: 400px;
-            margin: 20px auto;
+            height: 380px;
+            margin: 40px auto 20px; /* زيادة الهامش العلوي لترك مساحة للزر */
             background: white;
-            border-radius: 20px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px dashed #bdc3c7;
-            color: #bdc3c7;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
         }
 
-        /* زر حجز الموعد العائم المحسن */
+        /* زر الموعد العائم */
         .floating-booking {
             position: fixed;
             bottom: 25px;
@@ -114,42 +109,46 @@
             color: white;
             text-decoration: none;
             display: block;
-            padding: 18px;
+            padding: 16px;
             border-radius: 50px;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: bold;
             text-align: center;
             box-shadow: 0 8px 20px rgba(39, 174, 96, 0.3);
         }
+
+        .footer { background: #1a1a1a; color: #777; padding: 20px; text-align: center; font-size: 0.8rem; margin-top: 50px; }
     </style>
 </head>
 <body>
 
-    <nav class="top-navbar">
-        <div class="brand-title">Ortho_Psy Tech</div>
-        <button class="specialty-btn" onclick="openNav()">TECH -Ortho_Psy_Research- ZONE⚙️</button>
-    </nav>
+    <header class="header-area">
+        <h1 class="brand-title">Ortho_Psy Tech</h1>
+        <button class="zone-btn" onclick="openNav()">
+            <span class="highlight">TECH</span> - Ortho_Psy_Research <span class="highlight">ZONE</span> ⚙️
+        </button>
+    </header>
 
     <div id="mySidebar" class="sidebar">
         <span class="closebtn" onclick="closeNav()">×</span>
-        <div style="padding: 0 25px 20px; color: var(--accent-blue); font-size: 0.8rem; letter-spacing: 1px;">الخدمات التقنية الخاصة</div>
-        <a href="/ortho-tech">🗣️ قسم Ortho Tech</a>
-        <a href="/psy-tech">🧠 قسم Psy Tech</a>
-        <a href="/researchers">🎓 قسم الباحثين</a>
-        <a href="/buy-platform">🛒 اقتناء المنصة للعيادات</a>
+        <div style="padding: 10px 20px; color: var(--gold); font-size: 0.7rem; border-bottom: 1px solid #444;">المساحة التقنية</div>
+        <a href="/ortho-tech">🗣️ Ortho Tech</a>
+        <a href="/psy-tech">🧠 Psy Tech</a>
+        <a href="/research-tech">🎓 Research Tech</a>
+        <a href="/buy-platform">🛒 أطلب منصتك لتسير عيادتك</a>
     </div>
 
-    <div class="main-content" id="main">
+    <div id="main" style="transition: 0.3s;">
         <div class="hero-slider">
-            <div style="text-align: center;">
-                <h3>[ شريط العروض والنشاطات - تسيير موظفة الاستقبال ]</h3>
-                <p>هنا تظهر إعلانات العيادة ونشاطاتها بشكل متحرك</p>
+            <div style="text-align: center; color: #bdc3c7;">
+                <h3>شريط العروض والنشاطات</h3>
+                <p>(مساحة تحكم موظفة الاستقبال)</p>
             </div>
         </div>
 
-        <div style="text-align: center; padding: 20px;">
-            <h2 style="color: var(--primary-dark);">مرحباً بكم في بوابتكم الصحية الرقمية</h2>
-            <p style="color: #7f8c8d; max-width: 600px; margin: 0 auto;">نجمع بين الخبرة العيادية والحلول التقنية المتطورة لتوفير أفضل رعاية ممكنة.</p>
+        <div style="text-align: center; padding: 40px 20px;">
+            <h2 style="color: var(--brand-color);">نحو رقمنة شاملة للممارسة العيادية الأرطفونية</h2>
+            <p style="color: #95a5a6; max-width: 500px; margin: 0 auto;">حلول رقمية ذكية للمفحوصين، للمختصين، والباحثين في منصة واحدة.</p>
         </div>
     </div>
 
@@ -157,11 +156,14 @@
         <a href="/booking" class="appointment-btn">احجز موعدك الآن 📅</a>
     </div>
 
+    <footer class="footer">
+        &copy; <span id="year"></span> Ortho_Psy Tech Clinic. جميع الحقوق محفوظة.
+    </footer>
+
     <script>
         function openNav() {
-            document.getElementById("mySidebar").style.width = "280px";
-            // تظليل بسيط للمحتوى عند فتح القائمة
-            document.getElementById("main").style.opacity = "0.3";
+            document.getElementById("mySidebar").style.width = "220px"; // عرض نحيف (تقريباً ربع الشاشة)
+            document.getElementById("main").style.opacity = "0.4";
         }
 
         function closeNav() {
@@ -169,11 +171,11 @@
             document.getElementById("main").style.opacity = "1";
         }
 
-        // إغلاق القائمة عند الضغط خارجها
-        window.onclick = function(event) {
-            if (event.target == document.getElementById("main")) {
-                closeNav();
-            }
+        document.getElementById("year").textContent = new Date().getFullYear();
+        
+        // إغلاق عند الضغط على المحتوى الرئيسي
+        document.getElementById("main").onclick = function() {
+            closeNav();
         }
     </script>
 </body>
