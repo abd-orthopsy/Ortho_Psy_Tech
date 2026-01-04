@@ -26,10 +26,10 @@
             flex-direction: column;
         }
 
-        /* الهيدر - توسيع الخلفية وتكبير الاسم */
+        /* الهيدر - توازن مثالي لاسم المنصة */
         .top-header {
             background: var(--brand-bg);
-            padding: 15px 5%;
+            padding: 12px 5%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -40,28 +40,29 @@
         }
 
         .brand-title { 
-            font-size: 2.4rem; /* تكبير الاسم */
+            font-size: 2.1rem; /* حجم محكم لسطر واحد */
             font-weight: 900; 
             color: white; 
             margin: 0;
             white-space: nowrap;
+            letter-spacing: -1px; /* لتقريب الكلمات قليلاً */
         }
 
         .menu-box {
             position: absolute;
-            right: 25px;
+            right: 20px;
             background: linear-gradient(135deg, #34495e, #2c3e50);
-            padding: 8px 15px;
+            padding: 6px 12px;
             border-radius: 8px;
             cursor: pointer;
             border: 1px solid rgba(255,255,255,0.1);
         }
-        .menu-icon { font-size: 26px; color: var(--gold); }
+        .menu-icon { font-size: 22px; color: var(--gold); }
 
-        /* زر الموعد - استعادة الحجم المثالي */
+        /* زر الموعد - محافظ على حجمه وهيبته */
         .floating-booking { 
             position: absolute; 
-            top: 90px; left: 25px; 
+            top: 85px; left: 20px; 
             z-index: 1500; 
             animation: swim 3.5s ease-in-out infinite;
         }
@@ -69,7 +70,7 @@
             background: linear-gradient(135deg, #27ae60, #2ecc71);
             color: white; text-decoration: none; 
             display: flex; align-items: center; justify-content: center;
-            width: 85px; height: 85px; /* الحجم المثالي السابق */
+            width: 85px; height: 85px;
             border-radius: 15px; font-size: 0.95rem; font-weight: bold; text-align: center;
             box-shadow: 0 8px 20px rgba(0,0,0,0.25);
             line-height: 1.3;
@@ -77,7 +78,7 @@
 
         @keyframes swim {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(15px); }
+            50% { transform: translateY(12px); }
         }
 
         /* القائمة الجانبية */
@@ -93,15 +94,9 @@
         .sidebar-header .white { color: white; }
 
         .sidebar a {
-            padding: 14px 5px;
-            text-decoration: none;
-            color: white;
-            display: block;
-            font-size: 1.15rem;
-            font-weight: bold;
-            margin: 10px 8px;
-            border-radius: 6px;
-            transition: 0.2s;
+            padding: 14px 5px; text-decoration: none; color: white;
+            display: block; font-size: 1.15rem; font-weight: bold;
+            margin: 10px 8px; border-radius: 6px; transition: 0.2s;
         }
         .link-ortho { background: rgba(52, 152, 219, 0.25); border-right: 4px solid #3498db; }
         .link-psy { background: rgba(155, 89, 182, 0.25); border-right: 4px solid #9b59b6; }
@@ -120,38 +115,39 @@
 
         .promo-zone { 
             background: var(--text-zone-bg);
-            padding: 10px 0;
+            padding: 8px 0;
             text-align: center;
             flex: 1.2;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
-        .promo-zone h2 { margin: 0; color: var(--brand-bg); font-size: 1.3rem; letter-spacing: 0.5px; }
-        .promo-zone p { margin: 6px 0 0; font-size: 1.1rem; color: var(--accent-blue); font-weight: 800; }
+        .promo-zone h2 { margin: 0; color: var(--brand-bg); font-size: 1.25rem; }
+        .promo-zone p { margin: 4px 0 0; font-size: 1.05rem; color: var(--accent-blue); font-weight: 800; }
 
-        /* الفوتر المنسق والواضح */
+        /* الفوتر المطور - الإيميل فوق الهاتف */
         .footer-main { 
             background: var(--footer-dark); 
             color: #ecf0f1; 
-            padding: 15px 5%; 
+            padding: 10px 5%; 
             width: 100%;
         }
         .footer-info { 
             display: flex; 
-            justify-content: center; 
-            gap: 40px; 
-            font-size: 0.95rem; /* تكبير البيانات */
-            font-weight: 500;
+            flex-direction: column; /* ترتيب رأسي */
+            align-items: center;
+            gap: 5px; 
+            font-size: 0.9rem;
         }
         .copyright { 
             background: #000; 
             color: var(--gold); 
-            padding: 8px; 
+            padding: 5px; 
             text-align: center; 
-            font-size: 0.8rem; 
+            font-size: 0.75rem; 
             width: 100%;
             border-top: 1px solid #222;
+            margin-top: -1px; /* لضمان الالتصاق التام */
         }
     </style>
 </head>
@@ -178,7 +174,7 @@
         <a href="/psy-tech" class="link-psy">Psy Tech</a>
         <a href="/research-tech" class="link-research">Research Tech</a>
         
-        <a href="/buy-platform" style="color: var(--gold); font-size: 1.1rem; margin-top: 30px; border: 2px dashed var(--gold); padding: 10px;">
+        <a href="/buy-platform" style="color: var(--gold); font-size: 1.1rem; margin-top: 30px; border: 2px dashed var(--gold); padding: 8px;">
             أطلب منصتك<br>لتسير عيادتك
         </a>
     </div>
@@ -190,8 +186,8 @@
     <div id="main" class="main-container">
         <div class="hero-slider">
             <div style="text-align: center; color: #9ab4bf;">
-                <h3 style="margin:0; font-size: 1.5rem;">[ شريط العروض والنشاطات ]</h3>
-                <p style="margin:8px 0 0; font-size: 1rem;">واجهة عرض إعلانات العيادة</p>
+                <h3 style="margin:0; font-size: 1.4rem;">[ شريط العروض والنشاطات ]</h3>
+                <p style="margin:5px 0 0; font-size: 0.95rem;">واجهة عرض إعلانات العيادة</p>
             </div>
         </div>
 
@@ -203,13 +199,12 @@
         <footer>
             <div class="footer-main">
                 <div class="footer-info">
-                    <span>📍 الجزائر</span>
                     <span>📧 contact@orthopsytech.com</span>
                     <span>📞 +213 XXX XX XX XX</span>
                 </div>
             </div>
             <div class="copyright">
-                &copy; <span id="year"></span> Ortho_Psy Tech Clinic. جميع الحقوق محفوظة وتخضع للحماية القانونية.
+                &copy; <span id="year"></span> Ortho_Psy Tech Clinic. جميع الحقوق محفوظة.
             </div>
         </footer>
     </div>
