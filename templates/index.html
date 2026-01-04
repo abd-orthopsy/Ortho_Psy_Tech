@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ortho_Psy Tech</title>
+    <title>Ortho_Psy Tech | النسخة الملكية</title>
     <style>
         :root {
             --brand-bg: #2c3e50;
@@ -26,10 +26,10 @@
             flex-direction: column;
         }
 
-        /* 1. الهيدر (العنوان) */
+        /* 1. الهيدر الملكي */
         .top-header {
             background: var(--brand-bg);
-            padding: 10px 5%;
+            padding: 12px 5%;
             display: flex; align-items: center; justify-content: center;
             position: relative; width: 100%; z-index: 1000;
         }
@@ -43,51 +43,57 @@
         }
         .menu-icon { font-size: 22px; color: var(--gold); }
 
-        /* 2. منطقة النصوص (تحت العنوان مباشرة) */
+        /* 2. منطقة النصوص (متصلة بالهيدر) */
         .promo-zone { 
             background: var(--text-zone-bg);
-            padding: 10px 0;
+            padding: 8px 0;
             text-align: center;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 2px solid #ddd;
         }
-        .promo-zone h2 { margin: 0; color: var(--brand-bg); font-size: 1.25rem; }
-        .promo-zone p { margin: 4px 0 0; font-size: 1.05rem; color: var(--accent-blue); font-weight: 800; }
+        .promo-zone h2 { margin: 0; color: var(--brand-bg); font-size: 1.2rem; }
+        .promo-zone p { margin: 3px 0 0; font-size: 1.05rem; color: var(--accent-blue); font-weight: 800; }
 
         /* زر الموعد المتحرك */
         .floating-booking { 
-            position: absolute; top: 120px; left: 20px; 
+            position: absolute; top: 125px; left: 20px; 
             z-index: 1500; animation: swim 3.5s ease-in-out infinite;
         }
         .appointment-btn {
             background: linear-gradient(135deg, #27ae60, #2ecc71);
             color: white; text-decoration: none; display: flex; align-items: center; 
-            justify-content: center; width: 85px; height: 85px;
-            border-radius: 15px; font-size: 0.95rem; font-weight: bold; text-align: center;
+            justify-content: center; width: 80px; height: 80px;
+            border-radius: 15px; font-size: 0.9rem; font-weight: bold; text-align: center;
             box-shadow: 0 8px 20px rgba(0,0,0,0.25);
         }
-        @keyframes swim { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(15px); } }
+        @keyframes swim { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(12px); } }
 
-        /* 3. شريط العروض (يأخذ المساحة الوسطى) */
+        /* 3. شريط العروض (قلب المنصة) */
         .hero-slider {
-            width: 100%; flex: 1; /* يتمدد ليملأ الفراغ */
+            width: 100%; flex: 1.5; /* تمدد متوازن */
             background: var(--slider-bg); 
             display: flex; align-items: center; justify-content: center;
             border-bottom: 2px solid #ddd;
         }
 
-        /* 4. الفوتر (ممتد وواضح) */
+        /* 4. الفوتر الأسود (مرتفع وواضح) */
         .footer-main { 
             background: var(--footer-dark); color: #ecf0f1; 
-            padding: 20px 5%; width: 100%;
+            padding: 15px 5%; width: 100%;
+            display: flex; flex-direction: column; justify-content: center;
         }
         .footer-info { 
             display: flex; flex-direction: column; 
-            align-items: center; gap: 8px; font-size: 1.1rem;
+            align-items: center; gap: 4px; font-size: 1rem;
         }
+        
+        /* عبارة الحقوق بالخلفية المتدرجة الجميلة */
         .copyright { 
-            background: #000; color: var(--gold); padding: 10px; 
+            background: linear-gradient(to right, #000000, #2c3e50, #000000); 
+            color: var(--gold); padding: 10px; 
             text-align: center; font-size: 0.85rem; width: 100%;
-            border-top: 1px solid #222;
+            border-top: 1px solid #333;
+            font-weight: bold;
+            box-shadow: 0 -3px 10px rgba(0,0,0,0.3);
         }
 
         /* القائمة الجانبية */
@@ -168,4 +174,4 @@
         document.getElementById("main").onclick = function() { closeNav(); }
     </script>
 </body>
-                </html>
+</html>
