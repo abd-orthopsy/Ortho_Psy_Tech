@@ -9,6 +9,7 @@
             --brand-bg: #2c3e50;
             --accent-blue: #3498db;
             --gold: #f1c40f;
+            --sidebar-bg: #1a252f;
             --footer-dark: #1a1a1a;
             --slider-bg: #eef7fa;
             --text-zone-bg: #f2f1ef;
@@ -18,129 +19,141 @@
         
         body { 
             font-family: 'Segoe UI', Tahoma, sans-serif; 
-            height: 100vh; 
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            background-color: white;
+            height: 100vh; display: flex; flex-direction: column;
+            overflow: hidden; background-color: white;
         }
 
-        /* الجزء العلوي */
-        .top-section { flex-shrink: 0; z-index: 10; }
-        
-        .top-header {
-            background: var(--brand-bg);
-            padding: 12px 5%;
-            display: flex; align-items: center; justify-content: center;
-            position: relative;
+        /* الهيدر مع زر القائمة */
+        .top-header { 
+            background: var(--brand-bg); 
+            padding: 12px 5%; 
+            display: flex; align-items: center; justify-content: center; 
+            position: relative; z-index: 1000; 
         }
         .brand-title { font-size: 1.9rem; font-weight: 900; color: white; }
 
+        .menu-box {
+            position: absolute; right: 20px;
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            padding: 6px 12px; border-radius: 8px; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.1);
+            z-index: 1100;
+        }
+        .menu-icon { font-size: 24px; color: var(--gold); }
+
+        /* منطقة النصوص */
         .promo-zone { 
-            background: var(--text-zone-bg);
-            padding: 10px 0;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
+            background: var(--text-zone-bg); 
+            padding: 10px 0; text-align: center; 
+            border-bottom: 1px solid #ddd; 
         }
         .promo-zone h2 { color: var(--brand-bg); font-size: 1.2rem; margin: 0; }
         .promo-zone p { color: var(--accent-blue); font-size: 1.05rem; font-weight: 800; margin-top: 3px; }
 
-        /* شريط العروض */
-        .hero-slider {
-            flex-grow: 1;
-            background: var(--slider-bg); 
-            display: flex; align-items: center; justify-content: center;
-            position: relative;
-        }
-
-        /* الفوتر المرفوع */
-        .footer-wrapper {
-            flex-shrink: 0;
-            background: var(--footer-dark);
-            width: 100%;
-            /* رفع الفوتر للأعلى بمقدار آمن */
-            padding-bottom: 25px; 
-            border-top: 4px solid var(--gold); /* الخط الذهبي الذي أعجبك */
-        }
-        
-        .contact-info {
-            padding: 15px 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            color: #ecf0f1;
-            font-size: 1rem;
-        }
-
-        /* شريط الحقوق المرفوع والمضيق */
-        .copyright-strip {
-            background: linear-gradient(to right, #000, #2c3e50, #000);
-            color: var(--gold);
-            height: 30px; /* حوالي 0.5 إلى 0.7 سم */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: bold;
-            width: 100%;
-            border-top: 1px solid #444;
-            /* يضمن ظهورها حتى لو كان هناك شريط أدوات للمتصفح */
-            position: relative;
-            z-index: 20;
-        }
-
         /* زر الموعد */
         .floating-booking { 
-            position: absolute; top: 120px; left: 20px; 
+            position: absolute; top: 130px; left: 20px; 
             z-index: 1500; animation: swim 3.5s ease-in-out infinite;
         }
         .appointment-btn {
             background: linear-gradient(135deg, #27ae60, #2ecc71);
             color: white; text-decoration: none; display: flex; align-items: center; 
-            justify-content: center; width: 80px; height: 80px;
-            border-radius: 15px; font-size: 0.9rem; font-weight: bold; text-align: center;
+            justify-content: center; width: 85px; height: 85px;
+            border-radius: 15px; font-size: 0.95rem; font-weight: bold; text-align: center;
             box-shadow: 0 8px 15px rgba(0,0,0,0.3);
         }
         @keyframes swim { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(12px); } }
 
+        /* شريط العروض */
+        .hero-slider { flex-grow: 1; background: var(--slider-bg); display: flex; align-items: center; justify-content: center; }
+
+        /* الفوتر المرفوع */
+        .footer-wrapper { flex-shrink: 0; background: var(--footer-dark); width: 100%; padding-bottom: 25px; border-top: 4px solid var(--gold); }
+        .contact-info { padding: 15px 0; display: flex; flex-direction: column; align-items: center; gap: 5px; color: #ecf0f1; font-size: 1rem; }
+        .copyright-strip { background: linear-gradient(to right, #000, #2c3e50, #000); color: var(--gold); height: 35px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: bold; border-top: 1px solid #444; }
+
+        /* القائمة الجانبية الملونة */
+        .sidebar {
+            height: 100%; width: 0; position: fixed; z-index: 3000;
+            top: 0; right: 0; background-color: var(--sidebar-bg);
+            overflow-x: hidden; transition: 0.3s; padding-top: 20px; text-align: center;
+        }
+        .sidebar-header { margin-bottom: 30px; }
+        .sidebar-header span { display: block; width: 100%; font-size: 1.8rem; font-weight: 900; line-height: 1.1; }
+        .sidebar a {
+            padding: 14px 5px; text-decoration: none; color: white;
+            display: block; font-size: 1.15rem; font-weight: bold;
+            margin: 10px 8px; border-radius: 6px;
+        }
+        .link-ortho { background: rgba(52, 152, 219, 0.25); border-right: 4px solid #3498db; }
+        .link-psy { background: rgba(155, 89, 182, 0.25); border-right: 4px solid #9b59b6; }
+        .link-research { background: rgba(46, 204, 113, 0.25); border-right: 4px solid #2ecc71; }
     </style>
 </head>
 <body>
 
-    <div class="top-section">
-        <header class="top-header">
-            <div class="brand-title">Ortho_Psy Tech</div>
-        </header>
-        <div class="promo-zone">
-            <h2>نحو رقمنة شاملة للممارسة العيادية الأرطفونية</h2>
-            <p>حلول رقمية ذكية للمفحوصين، وللمختصين والباحثين</p>
+    <header class="top-header">
+        <div class="menu-box" onclick="openNav()">
+            <div class="menu-icon">☰</div>
         </div>
+        <div class="brand-title">Ortho_Psy Tech</div>
+    </header>
+
+    <div class="promo-zone">
+        <h2>نحو رقمنة شاملة للممارسة العيادية الأرطفونية</h2>
+        <p>حلول رقمية ذكية للمفحوصين، وللمختصين والباحثين</p>
+    </div>
+
+    <div id="mySidebar" class="sidebar">
+        <span style="position: absolute; top: 10px; left: 15px; color: white; cursor: pointer; font-size: 25px;" onclick="closeNav()">×</span>
+        <div class="sidebar-header">
+            <span style="color:var(--gold)">TECH</span>
+            <span style="color:white">Ortho</span>
+            <span style="color:white">Psy</span>
+            <span style="color:white">Research</span>
+            <span style="color:var(--gold)">ZONE</span>
+        </div>
+        <a href="/ortho-tech" class="link-ortho">Ortho Tech</a>
+        <a href="/psy-tech" class="link-psy">Psy Tech</a>
+        <a href="/research-tech" class="link-research">Research Tech</a>
+        <a href="/buy-platform" style="color: var(--gold); font-size: 1.1rem; margin-top: 30px; border: 2px dashed var(--gold); padding: 8px;">أطلب منصتك<br>لتسير عيادتك</a>
     </div>
 
     <div class="floating-booking">
-        <a href="#" class="appointment-btn">حجز<br>موعد 📅</a>
+        <a href="/booking" class="appointment-btn">حجز<br>موعد 📅</a>
     </div>
 
-    <div class="hero-slider">
-        <div style="text-align: center; color: #9ab4bf;">
-            <h3 style="margin:0; font-size: 1.5rem;">[ شريط العروض والنشاطات ]</h3>
-            <p style="margin-top:5px;">واجهة عرض إعلانات العيادة</p>
+    <div id="main-content" style="flex: 1; display: flex; flex-direction: column;">
+        <div class="hero-slider">
+            <div style="text-align: center; color: #9ab4bf;">
+                <h3 style="margin:0; font-size: 1.6rem;">[ شريط العروض والنشاطات ]</h3>
+                <p>واجهة عرض إعلانات العيادة</p>
+            </div>
         </div>
-    </div>
 
-    <div class="footer-wrapper">
-        <div class="contact-info">
-            <span>📧 contact@orthopsytech.com</span>
-            <span>📞 +213 XXX XX XX XX</span>
-        </div>
-        <div class="copyright-strip">
-            &copy; <span id="year"></span> Ortho_Psy Tech Clinic. جميع الحقوق محفوظة.
+        <div class="footer-wrapper">
+            <div class="contact-info">
+                <span>📧 contact@orthopsytech.com</span>
+                <span>📞 +213 XXX XX XX XX</span>
+            </div>
+            <div class="copyright-strip">
+                &copy; <span id="year"></span> Ortho_Psy Tech Clinic. جميع الحقوق محفوظة.
+            </div>
         </div>
     </div>
 
     <script>
+        function openNav() { 
+            document.getElementById("mySidebar").style.width = "180px"; 
+            document.getElementById("main-content").style.opacity = "0.3";
+        }
+        function closeNav() { 
+            document.getElementById("mySidebar").style.width = "0"; 
+            document.getElementById("main-content").style.opacity = "1";
+        }
         document.getElementById("year").textContent = new Date().getFullYear();
+        // إغلاق القائمة عند الضغط على المحتوى الرئيسي
+        document.getElementById("main-content").onclick = function() { closeNav(); }
     </script>
 </body>
 </html>
