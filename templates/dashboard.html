@@ -36,7 +36,7 @@
 
         /* المحتوى الرئيسي */
         .main-content {
-            margin-right: 250px; width: 100%; padding: 30px;
+            margin-right: 250px; width: calc(100% - 250px); padding: 30px;
         }
 
         .header-stats {
@@ -63,6 +63,7 @@
         textarea {
             width: 100%; height: 100px; padding: 15px; border: 1px solid #ddd;
             border-radius: 10px; font-family: inherit; font-size: 1rem; margin-top: 15px;
+            resize: vertical;
         }
 
         .update-btn {
@@ -83,7 +84,7 @@
         <div class="menu-item">📢 شريط العروض</div>
         <div class="menu-item">📅 المواعيد</div>
         <div class="menu-item">👥 المفحوصين</div>
-        <a href="/" style="color: #ff7675; text-decoration: none; margin-top: 50px; display: block; text-align: center;">🚪 تسجيل الخروج</a>
+        <a href="/" style="color: #ff7675; text-decoration: none; margin-top: 50px; display: block; text-align: center; font-weight: bold;">🚪 تسجيل الخروج</a>
     </div>
 
     <div class="main-content">
@@ -106,18 +107,44 @@
             <h3>📢 التحكم في شريط العروض والنشاطات</h3>
             <p style="color: #7f8c8d; font-size: 0.9rem;">النص الذي ستكتبه هنا سيظهر فوراً للزوار في الصفحة الرئيسية:</p>
             <textarea id="offerText" placeholder="اكتب إعلان العيادة الجديد هنا..."></textarea>
-            <button class="update-btn" onclick="updateOffer()">تحديث الواجهة الرئيسية</button>
+            <button class="update-btn" id="submitBtn" onclick="updateOffer()">تحديث الواجهة الرئيسية</button>
         </div>
     </div>
 
     <script>
         function updateOffer() {
             const text = document.getElementById('offerText').value;
+            const btn = document.getElementById('submitBtn');
+
             if(text) {
-                alert("تم تحديث شريط العروض بنجاح: " + text);
-                // هنا سنربط لاحقاً قاعدة البيانات لتغيير النص فعلياً
+                btn.innerText = "جاري التحديث...";
+                btn.disabled = true;
+
+                // إرسال البيانات إلى Flask عبر FormData
+                let formData = new FormData();
+                formData.append('new_offer', text);
+
+                fetch('/update_offer', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if(response.ok) return response.text();
+                    throw new Error('فشل التحديث');
+                })
+                .then(data => {
+                    alert("✅ " + data);
+                    document.getElementById('offerText').value = ""; // مسح المربع بعد النجاح
+                })
+                .catch(error => {
+                    alert("❌ حدث خطأ: " + error.message);
+                })
+                .finally(() => {
+                    btn.innerText = "تحديث الواجهة الرئيسية";
+                    btn.disabled = false;
+                });
             } else {
-                alert("يرجى كتابة نص أولاً");
+                alert("⚠️ يرجى كتابة نص أولاً");
             }
         }
     </script>
