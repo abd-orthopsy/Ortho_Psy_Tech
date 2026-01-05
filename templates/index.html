@@ -117,7 +117,7 @@
         <a href="/psy-tech" class="link-psy">Psy Tech</a>
         <a href="/research-tech" class="link-research">Research Tech</a>
         <a href="/buy-platform" style="color: var(--gold); font-size: 1.1rem; margin-top: 30px; border: 2px dashed var(--gold); padding: 8px;">أطلب منصتك<br>لتسير عيادتك</a>
-        <a href="login.html" style="background: rgba(255,255,255,0.1); color: var(--gold); border: 1px solid var(--gold); margin-top: 40px; font-size: 0.9rem; border-radius: 8px;">🔑 دخول الإدارة</a>
+        <a href="javascript:void(0)" onclick="openLogin()" style="background: rgba(255,255,255,0.1); color: var(--gold); border: 1px solid var(--gold); margin-top: 40px; font-size: 0.9rem; border-radius: 8px;">🔑 دخول الإدارة</a>
     </div>
 
     <div class="floating-booking">
@@ -156,5 +156,34 @@
         // إغلاق القائمة عند الضغط على المحتوى الرئيسي
         document.getElementById("main-content").onclick = function() { closeNav(); }
     </script>
+    <div id="loginModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:5000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:30px; border-radius:15px; width:90%; max-width:350px; text-align:center; border-top:5px solid var(--gold); position:relative;">
+        <span onclick="closeLogin()" style="position:absolute; top:10px; left:15px; cursor:pointer; font-size:20px; color:#999;">×</span>
+        <h2 style="color:var(--brand-bg); margin-bottom:20px;">دخول الإدارة</h2>
+        <input type="text" id="user" placeholder="اسم المستخدم" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:5px;">
+        <input type="password" id="pass" placeholder="كلمة المرور" style="width:100%; padding:10px; margin-bottom:20px; border:1px solid #ddd; border-radius:5px;">
+        <button onclick="checkAuth()" style="width:100%; padding:12px; background:var(--brand-bg); color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">دخول</button>
+    </div>
+</div>
+
+<script>
+function openLogin() {
+    closeNav(); // إغلاق القائمة أولاً
+    document.getElementById('loginModal').style.display = 'flex';
+}
+function closeLogin() {
+    document.getElementById('loginModal').style.display = 'none';
+}
+function checkAuth() {
+    const u = document.getElementById('user').value;
+    const p = document.getElementById('pass').value;
+    if(u === "admin" && p === "1234") {
+        alert("أهلاً بك في غرفة القيادة!");
+        // هنا سنفتح لوحة التحكم لاحقاً
+    } else {
+        alert("البيانات غير صحيحة");
+    }
+}
+</script>
 </body>
 </html>
