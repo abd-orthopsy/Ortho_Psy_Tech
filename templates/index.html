@@ -60,7 +60,7 @@
         }
         @keyframes swim { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(12px); } }
 
-        .hero-slider { flex-grow: 1; background: var(--slider-bg); display: flex; align-items: center; justify-content: center; }
+        .hero-slider { flex-grow: 1; background: var(--slider-bg); display: flex; align-items: center; justify-content: center; padding: 20px; }
 
         .footer-wrapper { flex-shrink: 0; background: var(--footer-dark); width: 100%; padding-bottom: 25px; border-top: 4px solid var(--gold); }
         .contact-info { padding: 15px 0; display: flex; flex-direction: column; align-items: center; gap: 5px; color: #ecf0f1; font-size: 1rem; }
@@ -120,9 +120,11 @@
 
     <div id="main-content" style="flex: 1; display: flex; flex-direction: column;">
         <div class="hero-slider">
-            <div style="text-align: center; color: #9ab4bf;">
-                <h3 style="margin:0; font-size: 1.6rem;">[ شريط العروض والنشاطات ]</h3>
-                <p>واجهة عرض إعلانات العيادة</p>
+            <div style="text-align: center; color: var(--brand-bg); background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 2px solid var(--gold); max-width: 80%;">
+                <h3 style="margin:0; font-size: 1.8rem; color: var(--accent-blue);">
+                    {{ offer_text }}
+                </h3>
+                <p style="margin-top: 15px; color: #7f8c8d; font-weight: bold;">📢 أحدث نشاطات العيادة</p>
             </div>
         </div>
 
