@@ -7,12 +7,19 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-# 2. مسار صفحة تسجيل دخول الإدارة (تم التصحيح هنا)
+# 2. مسار صفحة تسجيل دخول الإدارة
 @app.route('/login')
 def login():
+    # ملاحظة: تأكد أن اسم الملف في مجلد templates هو login.html 
+    # إذا كان اسم ملفك logine.html فقم بتغييرها هنا
     return render_template('login.html')
 
-# 3. مسار صفحة حجز الموعد
+# 3. مسار لوحة التحكم (الإدارة الملكية)
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
+# 4. مسار صفحة حجز الموعد
 @app.route('/booking')
 def booking():
     return render_template('booking.html')
