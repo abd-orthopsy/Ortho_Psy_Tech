@@ -23,7 +23,6 @@
             overflow: hidden; background-color: white;
         }
 
-        /* الهيدر مع زر القائمة */
         .top-header { 
             background: var(--brand-bg); 
             padding: 12px 5%; 
@@ -36,12 +35,10 @@
             position: absolute; right: 20px;
             background: linear-gradient(135deg, #34495e, #2c3e50);
             padding: 6px 12px; border-radius: 8px; cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.1);
             z-index: 1100;
         }
         .menu-icon { font-size: 24px; color: var(--gold); }
 
-        /* منطقة النصوص */
         .promo-zone { 
             background: var(--text-zone-bg); 
             padding: 10px 0; text-align: center; 
@@ -50,7 +47,6 @@
         .promo-zone h2 { color: var(--brand-bg); font-size: 1.2rem; margin: 0; }
         .promo-zone p { color: var(--accent-blue); font-size: 1.05rem; font-weight: 800; margin-top: 3px; }
 
-        /* زر الموعد */
         .floating-booking { 
             position: absolute; top: 130px; left: 20px; 
             z-index: 1500; animation: swim 3.5s ease-in-out infinite;
@@ -64,15 +60,12 @@
         }
         @keyframes swim { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(12px); } }
 
-        /* شريط العروض */
         .hero-slider { flex-grow: 1; background: var(--slider-bg); display: flex; align-items: center; justify-content: center; }
 
-        /* الفوتر المرفوع */
         .footer-wrapper { flex-shrink: 0; background: var(--footer-dark); width: 100%; padding-bottom: 25px; border-top: 4px solid var(--gold); }
         .contact-info { padding: 15px 0; display: flex; flex-direction: column; align-items: center; gap: 5px; color: #ecf0f1; font-size: 1rem; }
         .copyright-strip { background: linear-gradient(to right, #000, #2c3e50, #000); color: var(--gold); height: 35px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: bold; border-top: 1px solid #444; }
 
-        /* القائمة الجانبية الملونة */
         .sidebar {
             height: 100%; width: 0; position: fixed; z-index: 3000;
             top: 0; right: 0; background-color: var(--sidebar-bg);
@@ -117,7 +110,8 @@
         <a href="/psy-tech" class="link-psy">Psy Tech</a>
         <a href="/research-tech" class="link-research">Research Tech</a>
         <a href="/buy-platform" style="color: var(--gold); font-size: 1.1rem; margin-top: 30px; border: 2px dashed var(--gold); padding: 8px;">أطلب منصتك<br>لتسير عيادتك</a>
-        <a href="javascript:void(0)" onclick="openLogin()" style="background: rgba(255,255,255,0.1); color: var(--gold); border: 1px solid var(--gold); margin-top: 40px; font-size: 0.9rem; border-radius: 8px;">🔑 دخول الإدارة</a>
+        
+        <a href="login.html" target="_blank" style="background: rgba(255,255,255,0.1); color: var(--gold); border: 1px solid var(--gold); margin-top: 40px; font-size: 0.9rem; border-radius: 8px;">🔑 دخول الإدارة</a>
     </div>
 
     <div class="floating-booking">
@@ -153,37 +147,7 @@
             document.getElementById("main-content").style.opacity = "1";
         }
         document.getElementById("year").textContent = new Date().getFullYear();
-        // إغلاق القائمة عند الضغط على المحتوى الرئيسي
         document.getElementById("main-content").onclick = function() { closeNav(); }
     </script>
-    <div id="loginModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:5000; align-items:center; justify-content:center;">
-    <div style="background:white; padding:30px; border-radius:15px; width:90%; max-width:350px; text-align:center; border-top:5px solid var(--gold); position:relative;">
-        <span onclick="closeLogin()" style="position:absolute; top:10px; left:15px; cursor:pointer; font-size:20px; color:#999;">×</span>
-        <h2 style="color:var(--brand-bg); margin-bottom:20px;">دخول الإدارة</h2>
-        <input type="text" id="user" placeholder="اسم المستخدم" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:5px;">
-        <input type="password" id="pass" placeholder="كلمة المرور" style="width:100%; padding:10px; margin-bottom:20px; border:1px solid #ddd; border-radius:5px;">
-        <button onclick="checkAuth()" style="width:100%; padding:12px; background:var(--brand-bg); color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">دخول</button>
-    </div>
-</div>
-
-<script>
-function openLogin() {
-    closeNav(); // إغلاق القائمة أولاً
-    document.getElementById('loginModal').style.display = 'flex';
-}
-function closeLogin() {
-    document.getElementById('loginModal').style.display = 'none';
-}
-function checkAuth() {
-    const u = document.getElementById('user').value;
-    const p = document.getElementById('pass').value;
-    if(u === "admin" && p === "1234") {
-        alert("أهلاً بك في غرفة القيادة!");
-        // هنا سنفتح لوحة التحكم لاحقاً
-    } else {
-        alert("البيانات غير صحيحة");
-    }
-}
-</script>
 </body>
 </html>
