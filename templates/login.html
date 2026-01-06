@@ -42,6 +42,9 @@
         .login-btn:hover { background: #34495e; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
 
         .back-home { margin-top: 20px; display: inline-block; color: var(--accent-blue); text-decoration: none; font-size: 0.85rem; }
+        
+        /* رسالة الخطأ */
+        .error-msg { color: #e74c3c; background: #fdeaea; padding: 10px; border-radius: 5px; margin-bottom: 20px; display: none; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -51,16 +54,18 @@
         <h2>دخول الإدارة</h2>
         <p>المنطقة التقنية - لوحة تحكم العيادة</p>
 
+        <div id="errorBox" class="error-msg">⚠️ بيانات الدخول غير صحيحة</div>
+
         <form id="loginForm">
             <div class="input-group">
                 <label>اسم المستخدم</label>
-                <input type="text" id="username" placeholder="اسم المستخدم" required>
+                <input type="text" name="username" id="username" placeholder="اسم المستخدم" required>
             </div>
             <div class="input-group">
                 <label>كلمة المرور</label>
-                <input type="password" id="password" placeholder="••••••••" required>
+                <input type="password" name="password" id="password" placeholder="••••••••" required>
             </div>
-            <button type="submit" class="login-btn">تسجيل الدخول</button>
+            <button type="submit" id="loginBtn" class="login-btn">تسجيل الدخول</button>
         </form>
 
         <a href="/" class="back-home">← العودة للموقع الرئيسي</a>
@@ -69,16 +74,35 @@
     <script>
         document.getElementById('loginForm').onsubmit = function(e) {
             e.preventDefault();
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
+            
+            const btn = document.getElementById('loginBtn');
+            const errorBox = document.getElementById('errorBox');
+            
+            btn.innerText = "جاري التحقق...";
+            btn.disabled = true;
+            errorBox.style.display = "none";
 
-            // التحقق من البيانات والتحويل للوحة التحكم
-            if(user === "admin" && pass === "1234") {
-                // استخدام window.location.replace لضمان التحويل النظيف في Flask
-                window.location.href = "/dashboard";
-            } else {
-                alert("بيانات الدخول غير صحيحة، حاول مجدداً.");
-            }
+            // إرسال البيانات إلى السيرفر للتحقق
+            let formData = new FormData(this);
+
+            fetch('/login_check', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    window.location.href = data.redirect;
+                } else {
+                    errorBox.style.display = "block";
+                    btn.innerText = "تسجيل الدخول";
+                    btn.disabled = false;
+                }
+            })
+            .catch(() => {
+                alert("خطأ في الاتصال بالسيرفر");
+                btn.disabled = false;
+            });
         }
     </script>
 </body>
