@@ -24,16 +24,16 @@ def index():
 
 @app.route('/login')
 def login():
-    """عرض صفحة الدخول (logine.html)"""
-    return render_template('logine.html')
+    """عرض صفحة الدخول - تم تعديل الاسم ليكون login.html 🔑"""
+    return render_template('login.html')
 
 @app.route('/login_check', methods=['POST'])
 def login_check():
-    """التحقق من بيانات الدخول بشكل احترافي من جهة السيرفر 🛡️"""
+    """التحقق من بيانات الدخول من جهة السيرفر 🛡️"""
     user = request.form.get('username')
     pw = request.form.get('password')
     
-    # التحقق من البيانات (يمكنك تغييرها لاحقاً أو ربطها بقاعدة بيانات)
+    # بيانات الدخول الافتراضية
     if user == "admin" and pw == "1234":
         return jsonify({"success": True, "redirect": "/dashboard"})
     else:
