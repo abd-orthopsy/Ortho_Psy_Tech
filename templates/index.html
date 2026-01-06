@@ -64,15 +64,26 @@
 
         .footer-wrapper { flex-shrink: 0; background: var(--footer-dark); width: 100%; padding-bottom: 25px; border-top: 4px solid var(--gold); }
         .contact-info { padding: 15px 0; display: flex; flex-direction: column; align-items: center; gap: 5px; color: #ecf0f1; font-size: 1rem; }
-        .copyright-strip { background: linear-gradient(to right, #000, #2c3e50, #000); color: var(--gold); height: 35px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: bold; border-top: 1px solid #444; }
+        
+        /* 🎨 تعديل الهوامش 0.3 ملم المثالي للحقوق */
+        .copyright-strip { 
+            background: linear-gradient(to right, #000, #2c3e50, #000); 
+            color: var(--gold); 
+            height: 38px; /* زيادة بسيطة في الطول */
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 0.85rem; font-weight: bold; 
+            border-top: 1px solid #444;
+            margin-bottom: -1px; /* سحب للأسفل لإلغاء أي فراغ */
+        }
 
         .sidebar {
             height: 100%; width: 0; position: fixed; z-index: 3000;
             top: 0; right: 0; background-color: var(--sidebar-bg);
             overflow-x: hidden; transition: 0.3s; padding-top: 20px; text-align: center;
         }
-        .sidebar-header { margin-bottom: 30px; }
+        .sidebar-header { margin-bottom: 15px; } /* تقليل الهامش لترك مساحة للزر الجديد */
         .sidebar-header span { display: block; width: 100%; font-size: 1.8rem; font-weight: 900; line-height: 1.1; }
+        
         .sidebar a {
             padding: 14px 5px; text-decoration: none; color: white;
             display: block; font-size: 1.15rem; font-weight: bold;
@@ -81,6 +92,15 @@
         .link-ortho { background: rgba(52, 152, 219, 0.25); border-right: 4px solid #3498db; }
         .link-psy { background: rgba(155, 89, 182, 0.25); border-right: 4px solid #9b59b6; }
         .link-research { background: rgba(46, 204, 113, 0.25); border-right: 4px solid #2ecc71; }
+
+        /* ✨ تنسيق زر دخول الإدارة الجديد في القائمة */
+        .admin-quick-link {
+            background: rgba(241, 196, 15, 0.15);
+            color: var(--gold) !important;
+            border: 1px solid var(--gold);
+            margin-bottom: 25px !important;
+            font-size: 0.95rem !important;
+        }
     </style>
 </head>
 <body>
@@ -99,6 +119,7 @@
 
     <div id="mySidebar" class="sidebar">
         <span style="position: absolute; top: 10px; left: 15px; color: white; cursor: pointer; font-size: 25px;" onclick="closeNav()">×</span>
+        
         <div class="sidebar-header">
             <span style="color:var(--gold)">TECH</span>
             <span style="color:white">Ortho</span>
@@ -106,12 +127,14 @@
             <span style="color:white">Research</span>
             <span style="color:var(--gold)">ZONE</span>
         </div>
+
+        <a href="{{ url_for('login') }}" class="admin-quick-link">🔑 دخول الإدارة</a>
+
         <a href="/ortho-tech" class="link-ortho">Ortho Tech</a>
         <a href="/psy-tech" class="link-psy">Psy Tech</a>
         <a href="/research-tech" class="link-research">Research Tech</a>
-        <a href="/buy-platform" style="color: var(--gold); font-size: 1.1rem; margin-top: 30px; border: 2px dashed var(--gold); padding: 8px;">أطلب منصتك<br>لتسير عيادتك</a>
         
-        <a href="{{ url_for('login') }}" target="_blank" style="background: rgba(255,255,255,0.1); color: var(--gold); border: 1px solid var(--gold); margin-top: 40px; font-size: 0.9rem; border-radius: 8px;">🔑 دخول الإدارة</a>
+        <a href="/buy-platform" style="color: var(--gold); font-size: 1.1rem; margin-top: 30px; border: 2px dashed var(--gold); padding: 8px;">أطلب منصتك<br>لتسير عيادتك</a>
     </div>
 
     <div class="floating-booking">
@@ -152,4 +175,4 @@
         document.getElementById("main-content").onclick = function() { closeNav(); }
     </script>
 </body>
-</html>
+            </html>
