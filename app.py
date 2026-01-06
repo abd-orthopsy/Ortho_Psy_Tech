@@ -24,8 +24,20 @@ def index():
 
 @app.route('/login')
 def login():
-    """صفحة الدخول - ملاحظة: تأكد من تسمية الملف logine.html في مجلد templates"""
+    """عرض صفحة الدخول (logine.html)"""
     return render_template('logine.html')
+
+@app.route('/login_check', methods=['POST'])
+def login_check():
+    """التحقق من بيانات الدخول بشكل احترافي من جهة السيرفر 🛡️"""
+    user = request.form.get('username')
+    pw = request.form.get('password')
+    
+    # التحقق من البيانات (يمكنك تغييرها لاحقاً أو ربطها بقاعدة بيانات)
+    if user == "admin" and pw == "1234":
+        return jsonify({"success": True, "redirect": "/dashboard"})
+    else:
+        return jsonify({"success": False})
 
 @app.route('/dashboard')
 def dashboard():
