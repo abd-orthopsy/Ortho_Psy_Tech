@@ -141,16 +141,18 @@
         <a href="/booking" class="appointment-btn">حجز<br>موعد 📅</a>
     </div>
 
-    <div id="main-content" style="flex: 1; display: flex; flex-direction: column;">
-        <div class="hero-slider">
-            <div style="text-align: center; color: var(--brand-bg); background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 2px solid var(--gold); max-width: 80%;">
-                <h3 style="margin:0; font-size: 1.8rem; color: var(--accent-blue);">
-                    {{ offer_text }}
-                </h3>
-                <p style="margin-top: 15px; color: #7f8c8d; font-weight: bold;">📢 أحدث نشاطات العيادة</p>
+   <div id="main-content" style="flex: 1; display: flex; flex-direction: column;">
+    <div class="hero-slider">
+        <div style="text-align: center; color: var(--brand-bg); background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 2px solid var(--gold); max-width: 80%; min-height: 200px; display: flex; flex-direction: column; justify-content: center;">
+            
+            <div style="font-size: 1.2rem; line-height: 1.6;">
+                {{ offer_text | safe }}
             </div>
-        </div>
 
+            <p style="margin-top: 20px; color: #7f8c8d; font-weight: bold; border-top: 1px dashed #ddd; padding-top: 10px;">📢 أحدث نشاطات العيادة</p>
+        </div>
+    </div>
+</div>
         <div class="footer-wrapper">
             <div class="contact-info">
                 <span>📧 contact@orthopsytech.com</span>
