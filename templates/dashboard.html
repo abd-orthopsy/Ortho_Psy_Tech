@@ -144,7 +144,8 @@
                                 <td>{{ e.user_type }}</td>
                                 <td><span class="status-examinee">مفحوص مسجل</span></td>
                                 <td class="action-btns">
-                                    <button class="btn-view" onclick="viewDetails('{{ e.main_name }}', '{{ e.problem }}')">عرض الملف</button>
+                                <td class="action-btns">
+                                    <a href="/examinee_file/{{ e.id }}" class="btn-view" style="text-decoration: none; display: inline-block;">عرض الملف الكامل</a>
                                 </td>
                             </tr>
                             {% endfor %}
