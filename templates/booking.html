@@ -35,6 +35,7 @@
 
         .submit-btn { background: var(--success); color: white; border: none; padding: 15px; width: 100%; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
         .submit-btn:hover { transform: scale(1.02); background: #219150; }
+        .submit-btn:disabled { background: #95a5a6; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -51,10 +52,10 @@
             <label>هل أنت؟</label>
             <div class="radio-group">
                 <label class="radio-option">
-                    <input type="radio" name="user_type" value="adult" onclick="toggleSection(false)" checked> راشد
+                    <input type="radio" name="user_type" value="راشد" onclick="toggleSection(false)" checked> راشد
                 </label>
                 <label class="radio-option">
-                    <input type="radio" name="user_type" value="parent" onclick="toggleSection(true)"> ولي طفل
+                    <input type="radio" name="user_type" value="ولي طفل" onclick="toggleSection(true)"> ولي طفل
                 </label>
             </div>
         </div>
@@ -62,36 +63,36 @@
         <form id="bookingForm" onsubmit="handleSubmit(event)">
             <div class="form-group">
                 <label id="main-label">اسم ولقب الراشد:</label>
-                <input type="text" placeholder="الاسم واللقب الكامل" required>
+                <input type="text" id="main_name" placeholder="الاسم واللقب الكامل" required>
             </div>
 
             <div style="display: flex; gap: 15px;">
                 <div class="form-group" style="flex: 1;">
                     <label>تاريخ الميلاد:</label>
-                    <input type="date" required>
+                    <input type="date" id="birth_date" required>
                 </div>
                 <div class="form-group" style="flex: 1;">
                     <label>الجنس:</label>
-                    <select required>
-                        <option value="male">ذكر</option>
-                        <option value="female">أنثى</option>
+                    <select id="gender" required>
+                        <option value="ذكر">ذكر</option>
+                        <option value="أنثى">أنثى</option>
                     </select>
                 </div>
             </div>
 
             <div class="form-group">
                 <label>مكان الإقامة:</label>
-                <input type="text" placeholder="الولاية / البلدية" required>
+                <input type="text" id="address" placeholder="الولاية / البلدية" required>
             </div>
 
             <div style="display: flex; gap: 15px;">
                 <div class="form-group" style="flex: 1;">
                     <label>رقم الهاتف:</label>
-                    <input type="tel" placeholder="0XXXXXXXXX" required>
+                    <input type="tel" id="phone" placeholder="0XXXXXXXXX" required>
                 </div>
                 <div class="form-group" style="flex: 1;">
                     <label>البريد الإلكتروني:</label>
-                    <input type="email" placeholder="example@mail.com">
+                    <input type="email" id="email" placeholder="example@mail.com">
                 </div>
             </div>
 
@@ -99,18 +100,18 @@
                 <h3 style="margin-top: 0; color: var(--accent);">معلومات الطفل 👶</h3>
                 <div class="form-group">
                     <label>اسم ولقب الطفل:</label>
-                    <input type="text" placeholder="الاسم واللقب الكامل للطفل">
+                    <input type="text" id="child_name" placeholder="الاسم واللقب الكامل للطفل">
                 </div>
                 <div style="display: flex; gap: 15px;">
                     <div class="form-group" style="flex: 1;">
                         <label>تاريخ ميلاد الطفل:</label>
-                        <input type="date">
+                        <input type="date" id="child_birth">
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <label>جنس الطفل:</label>
-                        <select>
-                            <option value="male">ذكر</option>
-                            <option value="female">أنثى</option>
+                        <select id="child_gender">
+                            <option value="ذكر">ذكر</option>
+                            <option value="أنثى">أنثى</option>
                         </select>
                     </div>
                 </div>
@@ -118,10 +119,10 @@
 
             <div class="form-group">
                 <label>نوع المشكلة باختصار:</label>
-                <textarea id="problem" rows="3" placeholder="اكتب نبذة مختصرة عن الحالة..."></textarea>
+                <textarea id="problem" rows="3" placeholder="اكتب نبذة مختصرة عن الحالة..." required></textarea>
             </div>
 
-            <button type="submit" class="submit-btn">تسجيل الحجز 📅</button>
+            <button type="submit" id="submitBtn" class="submit-btn">تسجيل الحجز 📅</button>
 
             <div style="margin-top: 30px; text-align: center; border-top: 1px solid #ddd; padding-top: 20px;">
                 <p style="font-size: 1rem; color: #2c3e50; font-weight: bold;">
@@ -137,29 +138,61 @@
     </div>
 
     <script>
-        // وظيفة إظهار/إخفاء قسم الطفل
         function toggleSection(isParent) {
             const section = document.getElementById('child-section');
             const mainLabel = document.getElementById('main-label');
-            
-            if (isParent) {
-                section.style.display = 'block';
-                mainLabel.innerText = "اسم ولقب الولي:";
-            } else {
-                section.style.display = 'none';
-                mainLabel.innerText = "اسم ولقب الراشد:";
-            }
+            section.style.display = isParent ? 'block' : 'none';
+            mainLabel.innerText = isParent ? "اسم ولقب الولي:" : "اسم ولقب الراشد:";
         }
 
-        // وظيفة إظهار تنبيه فتح الحساب
         function showAccountNotice() {
             alert("تنبيه: يتم تفعيل هذا الحساب رسمياً في مقر العيادة لضمان خصوصية البيانات.");
         }
 
-        // وظيفة إرسال النموذج (مؤقتة حتى نربط قاعدة البيانات)
-        function handleSubmit(e) {
+        async function handleSubmit(e) {
             e.preventDefault();
-            alert("تنبيه هام:\nتفتح العيادة حساباً خاصاً بالأولياء والمفحوصين في أول يوم لهم بالزيارة حضورياً.\nسنتصل بك قريباً لتأكيد الموعد!");
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "جاري إرسال البيانات...";
+            btn.disabled = true;
+
+            // تجميع البيانات
+            const formData = {
+                user_type: document.querySelector('input[name="user_type"]:checked').value,
+                main_name: document.getElementById('main_name').value,
+                birth_date: document.getElementById('birth_date').value,
+                gender: document.getElementById('gender').value,
+                address: document.getElementById('address').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                problem: document.getElementById('problem').value,
+                // بيانات الطفل (تُرسل فقط إذا كان النوع ولي طفل)
+                child_name: document.getElementById('child_name').value,
+                child_birth: document.getElementById('child_birth').value,
+                child_gender: document.getElementById('child_gender').value
+            };
+
+            try {
+                const response = await fetch('/save_booking', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert("✅ تم بنجاح!\n" + result.message);
+                    window.location.href = "/"; // توجيه للرئيسية بعد النجاح
+                } else {
+                    alert("❌ فشل التسجيل: " + result.message);
+                    btn.disabled = false;
+                    btn.innerText = "تسجيل الحجز 📅";
+                }
+            } catch (error) {
+                alert("❌ خطأ في الاتصال بالسيرفر. يرجى المحاولة لاحقاً.");
+                btn.disabled = false;
+                btn.innerText = "تسجيل الحجز 📅";
+            }
         }
     </script>
 </body>
