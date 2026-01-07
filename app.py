@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 app = Flask(__name__)
-
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # السماح بحجم يصل إلى 16 ميجابايت
 # 📝 ملفات التخزين - تم التأكد من المسارات الصحيحة
 OFFER_FILE = "offer.txt"
 BOOKINGS_FILE = "bookings.json"
