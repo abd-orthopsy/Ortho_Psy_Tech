@@ -41,6 +41,7 @@
         th { background: #f8f9fa; color: var(--brand-bg); padding: 12px; border-bottom: 2px solid #eee; }
         td { padding: 12px; border-bottom: 1px solid #eee; font-size: 0.95rem; }
         .status-badge { background: #ffeaa7; color: #d35400; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+        .status-examinee { background: #c2fbde; color: #008d41; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
         
         /* المحرر */
         #editor-wrapper { margin-top: 15px; border-radius: 10px; overflow: hidden; border: 1px solid #ddd; position: relative;}
@@ -61,6 +62,7 @@
         /* أزرار الإجراءات في الجدول */
         .action-btns { display: flex; gap: 5px; }
         .btn-view { background: var(--accent-blue); color: white; border: none; padding: 5px 12px; border-radius: 5px; cursor: pointer; }
+        .btn-convert { background: #27ae60; color: white; border: none; padding: 5px 12px; border-radius: 5px; cursor: pointer; }
         .btn-delete { background: #e74c3c; color: white; border: none; padding: 5px 12px; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
@@ -69,14 +71,14 @@
         <h3>الإدارة الملكية</h3>
         <div class="menu-item active">🏠 الرئيسة</div>
         <div class="menu-item">📅 المواعيد ({{ (bookings|length) if bookings else 0 }})</div>
-        <div class="menu-item">👥 المفحوصين</div>
+        <div class="menu-item">👥 المفحوصين ({{ (examinees|length) if examinees else 0 }})</div>
         <a href="/" style="color: #ff7675; text-decoration: none; margin-top: 50px; display: block; text-align: center; font-weight: bold;">🚪 تسجيل الخروج</a>
     </div>
 
     <div class="main-content">
         <div class="header-stats">
             <div class="stat-card"><h4>إجمالي الحجوزات</h4><p>{{ (bookings|length) if bookings else 0 }}</p></div>
-            <div class="stat-card"><h4>طلبات جديدة</h4><p>{{ (bookings|length) if bookings else 0 }}</p></div>
+            <div class="stat-card"><h4>إجمالي المفحوصين</h4><p>{{ (examinees|length) if examinees else 0 }}</p></div>
             <div class="stat-card"><h4>حالات النشطة</h4><p>0</p></div>
         </div>
 
@@ -105,6 +107,7 @@
                                 <td><span class="status-badge">جديد</span></td>
                                 <td class="action-btns">
                                     <button class="btn-view" onclick="viewDetails('{{ b.main_name }}', '{{ b.problem }}')">عرض</button>
+                                    <button class="btn-convert" onclick="convertToExaminee('{{ b.id }}')">تحويل</button>
                                     <button class="btn-delete" onclick="deleteBooking('{{ b.id }}')">حذف</button>
                                 </td>
                             </tr>
@@ -112,6 +115,42 @@
                         {% else %}
                             <tr>
                                 <td colspan="6" style="text-align: center; color: #999; padding: 30px;">لا توجد مواعيد مسجلة حتى الآن</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <h3>👥 قاعدة بيانات المفحوصين (المسجلين)</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>تاريخ التحويل</th>
+                            <th>اسم المفحوص</th>
+                            <th>نوع الطلب</th>
+                            <th>الحالة</th>
+                            <th>الإجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if examinees %}
+                            {% for e in examinees|reverse %}
+                            <tr>
+                                <td>{{ e.converted_at }}</td>
+                                <td><strong>{{ e.main_name }}</strong></td>
+                                <td>{{ e.user_type }}</td>
+                                <td><span class="status-examinee">مفحوص مسجل</span></td>
+                                <td class="action-btns">
+                                    <button class="btn-view" onclick="viewDetails('{{ e.main_name }}', '{{ e.problem }}')">عرض الملف</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: #999; padding: 30px;">سجل المفحوصين فارغ حالياً</td>
                             </tr>
                         {% endif %}
                     </tbody>
@@ -168,10 +207,9 @@
         });
 
         function viewDetails(name, problem) {
-            alert("صاحب الطلب: " + name + "\n\nوصف الحالة:\n" + problem);
+            alert("الاسم: " + name + "\n\nالتفاصيل/المشكلة:\n" + problem);
         }
 
-        // دالة حذف الموعد
         function deleteBooking(bookingId) {
             if(confirm('هل أنت متأكد من حذف هذا الموعد نهائياً؟')) {
                 fetch('/delete_booking/' + bookingId, { method: 'POST' })
@@ -180,39 +218,47 @@
             }
         }
 
-    function saveRichOffer() {
-    const richContent = quill.root.innerHTML;
-    const btn = document.getElementById('submitBtn');
-    const sizeInMB = (new Blob([richContent]).size / (1024 * 1024)).toFixed(2);
-    
-    btn.innerText = "جاري النشر... (" + sizeInMB + " MB)";
-    btn.disabled = true;
-
-    // استخدام FormData لإرسال البيانات بشكل مستقل وآمن
-    let formData = new FormData();
-    formData.append('new_offer', richContent);
-
-    fetch('/update_offer', { 
-        method: 'POST', 
-        body: formData // لا نضع Headers يدوياً هنا، المتصفح سيتولى الأمر تلقائياً
-    })
-    .then(async response => {
-        if (response.ok) {
-            alert("✅ تم تحديث الواجهة بنجاح!");
-        } else {
-            const text = await response.text();
-            throw new Error(text);
+        // دالة التحويل الجديدة المضافة
+        function convertToExaminee(id) {
+            if(confirm('هل تريد نقل هذا الاسم إلى قاعدة بيانات المفحوصين؟')) {
+                fetch('/convert_to_examinee/' + id, { method: 'POST' })
+                .then(r => r.ok ? location.reload() : alert('فشل التحويل'))
+                .catch(() => alert('خطأ في الاتصال'));
+            }
         }
-    })
-    .catch(error => {
-        console.error("Error details:", error);
-        alert("❌ فشل التحديث.\nتأكد من إعادة تشغيل ملف app.py بعد إضافة سطر MAX_CONTENT_LENGTH.");
-    })
-    .finally(() => { 
-        btn.innerText = "نشر التحديث للواجهة الرئيسية ✨"; 
-        btn.disabled = false; 
-    });
-}
+
+        function saveRichOffer() {
+            const richContent = quill.root.innerHTML;
+            const btn = document.getElementById('submitBtn');
+            const sizeInMB = (new Blob([richContent]).size / (1024 * 1024)).toFixed(2);
+            
+            btn.innerText = "جاري النشر... (" + sizeInMB + " MB)";
+            btn.disabled = true;
+
+            let formData = new FormData();
+            formData.append('new_offer', richContent);
+
+            fetch('/update_offer', { 
+                method: 'POST', 
+                body: formData
+            })
+            .then(async response => {
+                if (response.ok) {
+                    alert("✅ تم تحديث الواجهة بنجاح!");
+                } else {
+                    const text = await response.text();
+                    throw new Error(text);
+                }
+            })
+            .catch(error => {
+                console.error("Error details:", error);
+                alert("❌ فشل التحديث التقني.");
+            })
+            .finally(() => { 
+                btn.innerText = "نشر التحديث للواجهة الرئيسية ✨"; 
+                btn.disabled = false; 
+            });
+        }
     </script>
 </body>
 </html>
