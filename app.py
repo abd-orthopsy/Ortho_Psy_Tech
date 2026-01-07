@@ -46,7 +46,7 @@ def login_check():
 def dashboard():
     # جلب المواعيد لعرضها في اللوحة
     bookings = get_all_bookings()
-    return render_template('dashboard.html', bookings=bookings)
+    return render_template('dashboard.html', bookings=all_bookings)
 
 @app.route('/save_booking', methods=['POST'])
 def save_booking():
