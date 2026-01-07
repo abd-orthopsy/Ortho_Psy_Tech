@@ -134,5 +134,14 @@ def delete_booking(booking_id):
 def booking():
     return render_template('booking.html')
 
+@app.route('/examinee_file/<examinee_id>')
+def examinee_file(examinee_id):
+    examinees = get_all_examinees()
+    # البحث عن المفحوص المطلوب
+    examinee = next((e for e in examinees if str(e.get('id')) == str(examinee_id)), None)
+    if examinee:
+        return render_template('examinee_profile.html', e=examinee)
+    return "المفحوص غير موجود", 404
+    
 if __name__ == '__main__':
     app.run(debug=True)
