@@ -68,15 +68,15 @@
     <div class="admin-sidebar">
         <h3>الإدارة الملكية</h3>
         <div class="menu-item active">🏠 الرئيسة</div>
-        <div class="menu-item">📅 المواعيد ({{ bookings|length }})</div>
+        <div class="menu-item">📅 المواعيد ({{ bookings|length if bookings else 0 }})</div>
         <div class="menu-item">👥 المفحوصين</div>
         <a href="/" style="color: #ff7675; text-decoration: none; margin-top: 50px; display: block; text-align: center; font-weight: bold;">🚪 تسجيل الخروج</a>
     </div>
 
     <div class="main-content">
         <div class="header-stats">
-            <div class="stat-card"><h4>إجمالي الحجوزات</h4><p>{{ bookings|length }}</p></div>
-            <div class="stat-card"><h4>طلبات جديدة</h4><p>{{ bookings|length }}</p></div>
+            <div class="stat-card"><h4>إجمالي الحجوزات</h4><p>{{ bookings|length if bookings else 0 }}</p></div>
+            <div class="stat-card"><h4>طلبات جديدة</h4><p>{{ bookings|length if bookings else 0 }}</p></div>
             <div class="stat-card"><h4>حالات النشطة</h4><p>0</p></div>
         </div>
 
@@ -95,23 +95,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for b in bookings|reverse %}
-                        <tr>
-                            <td>{{ b.date_submitted }}</td>
-                            <td>{{ b.user_type }}</td>
-                            <td>{{ b.main_name }}</td>
-                            <td><a href="tel:{{ b.phone }}" style="color: var(--accent-blue); text-decoration: none;">{{ b.phone }}</a></td>
-                            <td><span class="status-badge">جديد</span></td>
-                            <td class="action-btns">
-                                <button class="btn-view" onclick="viewDetails('{{ b.main_name }}', '{{ b.problem }}')">عرض</button>
-                                <button class="btn-delete" onclick="deleteBooking('{{ b.id }}')">حذف</button>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                        {% if not bookings %}
-                        <tr>
-                            <td colspan="6" style="text-align: center; color: #999; padding: 30px;">لا توجد مواعيد مسجلة حتى الآن</td>
-                        </tr>
+                        {% if bookings %}
+                            {% for b in bookings|reverse %}
+                            <tr>
+                                <td>{{ b.date_submitted }}</td>
+                                <td>{{ b.user_type }}</td>
+                                <td>{{ b.main_name }}</td>
+                                <td><a href="tel:{{ b.phone }}" style="color: var(--accent-blue); text-decoration: none;">{{ b.phone }}</a></td>
+                                <td><span class="status-badge">جديد</span></td>
+                                <td class="action-btns">
+                                    <button class="btn-view" onclick="viewDetails('{{ b.main_name }}', '{{ b.problem }}')">عرض</button>
+                                    <button class="btn-delete" onclick="deleteBooking('{{ b.id }}')">حذف</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: #999; padding: 30px;">لا توجد مواعيد مسجلة حتى الآن</td>
+                            </tr>
                         {% endif %}
                     </tbody>
                 </table>
@@ -168,7 +169,6 @@
             alert("صاحب الطلب: " + name + "\n\nوصف الحالة:\n" + problem);
         }
 
-        // دالة حذف الموعد
         function deleteBooking(bookingId) {
             if(confirm('هل أنت متأكد من حذف هذا الموعد نهائياً؟')) {
                 fetch('/delete_booking/' + bookingId, { method: 'POST' })
