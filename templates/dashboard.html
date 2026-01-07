@@ -6,6 +6,7 @@
     <title>لوحة التحكم | Ortho_Psy Tech</title>
     
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
     
     <style>
         :root {
@@ -43,14 +44,22 @@
         .status-badge { background: #ffeaa7; color: #d35400; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
         
         /* المحرر */
-        #editor-wrapper { margin-top: 15px; border-radius: 10px; overflow: hidden; border: 1px solid #ddd; }
-        #editor-container { height: 300px; font-size: 1.1rem; background: white; }
+        #editor-wrapper { margin-top: 15px; border-radius: 10px; overflow: hidden; border: 1px solid #ddd; position: relative;}
+        #editor-container { height: 400px; font-size: 1.1rem; background: white; }
         
-        .update-btn { background: var(--brand-bg); color: white; border: none; padding: 12px 40px; border-radius: 8px; cursor: pointer; margin-top: 20px; font-weight: bold; transition: 0.3s; }
+        /* شريط التنبيه بالحجم */
+        #size-indicator { 
+            font-size: 0.8rem; padding: 5px 10px; background: #eee; border-top: 1px solid #ddd; text-align: left; direction: ltr; 
+        }
+
+        .update-btn { background: var(--brand-bg); color: white; border: none; padding: 12px 40px; border-radius: 8px; cursor: pointer; margin-top: 20px; font-weight: bold; transition: 0.3s; width: 100%; }
         .update-btn:hover { background: var(--gold); color: var(--brand-bg); }
+        .update-btn:disabled { background: #ccc; cursor: not-allowed; }
         
         .ql-toolbar { direction: ltr; background: #f8f9fa; }
         .ql-editor { text-align: right; }
+        /* تحسين مظهر مقابض التحكم في الصورة */
+        .ql-image-resize-module { direction: ltr; }
     </style>
 </head>
 <body>
@@ -108,9 +117,12 @@
 
         <div class="control-panel">
             <h3>📢 تصميم شريط العروض والنشاطات</h3>
-            <p style="color: #7f8c8d; font-size: 0.9rem; margin-bottom: 10px;">استخدم المحرر لتنسيق الإعلان القادم على الصفحة الرئيسية.</p>
+            <p style="color: #7f8c8d; font-size: 0.9rem; margin-bottom: 10px;">
+                ميزة جديدة: اضغط على الصورة داخل المحرر لتصغيرها أو مسحها. 
+            </p>
             <div id="editor-wrapper">
                 <div id="editor-container"></div>
+                <div id="size-indicator">حجم البيانات: 0 MB</div>
             </div>
             <button class="update-btn" id="submitBtn" onclick="saveRichOffer()">نشر التحديث للواجهة الرئيسية ✨</button>
         </div>
@@ -118,10 +130,12 @@
 
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script>
-        // تهيئة المحرر
+        // تسجيل مكتبة تغيير الحجم
+        Quill.register('modules/imageResize', window.ImageResize.default);
+
         var quill = new Quill('#editor-container', {
             theme: 'snow',
-            placeholder: 'اكتب إعلان العيادة هنا...',
+            placeholder: 'اكتب إعلان العيادة هنا، وأضف الصور...',
             modules: {
                 toolbar: [
                     [{ 'header': [1, 2, false] }],
@@ -130,32 +144,62 @@
                     [{ 'align': [] }],
                     ['link', 'image', 'video'],
                     ['clean']
-                ]
+                ],
+                imageResize: {
+                    displaySize: true // يعرض الحجم أثناء التكبير/التصغير
+                }
             }
         });
 
-        // عرض تفاصيل المشكلة
+        // مراقبة الحجم الحقيقي للبيانات لمنع فشل النشر
+        quill.on('text-change', function() {
+            const html = quill.root.innerHTML;
+            const size = (new Blob([html]).size / (1024 * 1024)).toFixed(2);
+            const indicator = document.getElementById('size-indicator');
+            indicator.innerText = `حجم البيانات: ${size} MB (يفضل أقل من 2MB)`;
+            indicator.style.color = size > 2 ? 'red' : 'green';
+        });
+
         function viewDetails(name, problem) {
             alert("صاحب الطلب: " + name + "\n\nوصف الحالة:\n" + problem);
         }
 
-        // حفظ الإعلان
         function saveRichOffer() {
             const richContent = quill.root.innerHTML;
             const btn = document.getElementById('submitBtn');
+            
+            // فحص الحجم قبل الإرسال
+            const sizeInMB = new Blob([richContent]).size / (1024 * 1024);
+            if(sizeInMB > 4) {
+                alert("⚠️ المحتوى ضخم جداً! يرجى تصغير الصور أو تقليل عددها لضمان النشر.");
+                return;
+            }
+
             if(quill.getText().trim().length === 0 && !richContent.includes('<img')) {
                 alert("⚠️ يرجى كتابة محتوى أولاً");
                 return;
             }
-            btn.innerText = "جاري النشر...";
+
+            btn.innerText = "جاري معالجة الصور والنشر...";
             btn.disabled = true;
+
             let formData = new FormData();
             formData.append('new_offer', richContent);
-            fetch('/update_offer', { method: 'POST', body: formData })
-            .then(r => r.ok ? r.text() : Promise.reject())
-            .then(() => alert("✅ تم التحديث بنجاح!"))
-            .catch(() => alert("❌ فشل التحديث"))
-            .finally(() => { btn.innerText = "نشر التحديث للواجهة الرئيسية ✨"; btn.disabled = false; });
+
+            fetch('/update_offer', { 
+                method: 'POST', 
+                body: formData 
+            })
+            .then(r => {
+                if(!r.ok) throw new Error("السيرفر رفض الحجم الحالي");
+                return r.text();
+            })
+            .then(() => alert("✅ تم تحديث الواجهة الرئيسية بنجاح!"))
+            .catch((err) => alert("❌ فشل التحديث: " + err.message + "\nحاول تصغير الصور أكثر."))
+            .finally(() => { 
+                btn.innerText = "نشر التحديث للواجهة الرئيسية ✨"; 
+                btn.disabled = false; 
+            });
         }
     </script>
 </body>
