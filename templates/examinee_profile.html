@@ -1,1 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>الملف الإكلينيكي | {{ e.main_name }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --brand-bg: #2c3e50; --gold: #f1c40f; --white: #ffffff; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
+        .profile-container { max-width: 1000px; margin: 0 auto; }
+        .header-card { background: var(--brand-bg); color: white; padding: 25px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 5px solid var(--gold); }
+        .main-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-top: 20px; }
+        .info-card, .evolution-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .timeline-item { border-right: 3px solid var(--gold); padding: 15px; margin-bottom: 15px; background: #fafafa; position: relative; }
+        .timeline-date { font-size: 0.8rem; color: #7f8c8d; }
+        .btn-add { background: var(--brand-bg); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="header-card">
+            <div>
+                <h1><i class="fas fa-user-md"></i> الملف الإكلينيكي الإلكتروني</h1>
+                <p>المفحوص: <strong>{{ e.main_name }}</strong> | كود المرجع: #{{ e.id }}</p>
+            </div>
+            <a href="/dashboard" style="color: var(--gold); text-decoration: none;"><i class="fas fa-arrow-left"></i> العودة للوحة الإدارة</a>
+        </div>
 
+        <div class="main-grid">
+            <div class="info-card">
+                <h3><i class="fas fa-id-card"></i> بيانات الحالة</h3>
+                <hr>
+                <p><strong>نوع الفحص:</strong> {{ e.user_type }}</p>
+                <p><strong>الهاتف:</strong> {{ e.phone }}</p>
+                <p><strong>تاريخ التسجيل:</strong> {{ e.converted_at }}</p>
+                <p><strong>التشخيص المبدئي:</strong> <br> <small>{{ e.problem }}</small></p>
+            </div>
+
+            <div class="evolution-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3><i class="fas fa-chart-line"></i> المسار التطوري والملاحظات</h3>
+                    <button class="btn-add" onclick="addNewRecord()"><i class="fas fa-plus"></i> إضافة فحص/ملاحظة</button>
+                </div>
+                <hr>
+                <div id="timeline">
+                    <div class="timeline-item">
+                        <span class="timeline-date">تاريخ التحويل: {{ e.converted_at }}</span>
+                        <h4>فتح الملف الإلكتروني</h4>
+                        <p>تم تحويل المفحوص من قائمة الانتظار إلى قاعدة البيانات الدائمة.</p>
+                    </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addNewRecord() {
+            let note = prompt("أدخل ملاحظات الفحص الجديد أو نتائج التقييم:");
+            if(note) {
+                let timeline = document.getElementById('timeline');
+                let div = document.createElement('div');
+                div.className = 'timeline-item';
+                let date = new Date().toLocaleString('ar-EG');
+                div.innerHTML = `<span class="timeline-date">${date}</span><h4>تحديث إكلينيكي جديد</h4><p>${note}</p>`;
+                timeline.prepend(div);
+                // ملاحظة: سنحتاج لاحقاً لربط هذه الدالة بالسيرفر لحفظ الملاحظة بشكل دائم
+            }
+        }
+    </script>
+</body>
+</html>
