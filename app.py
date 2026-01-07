@@ -27,7 +27,10 @@ def get_all_bookings():
         try:
             with open(BOOKINGS_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                return data if isinstance(data, list) else []
+                # ترتيب المواعيد: الأحدث يظهر أولاً
+                if isinstance(data, list):
+                    return sorted(data, key=lambda x: x.get('date_submitted', ''), reverse=True)
+                return []
         except: return []
     return []
 
@@ -37,7 +40,9 @@ def get_all_examinees():
         try:
             with open(EXAMINEES_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                return data if isinstance(data, list) else []
+                if isinstance(data, list):
+                    return sorted(data, key=lambda x: x.get('converted_at', ''), reverse=True)
+                return []
         except: return []
     return []
 
