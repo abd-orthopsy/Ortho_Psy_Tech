@@ -5,7 +5,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# 📝 ملفات التخزين
+# 📝 ملفات التخزين - تم التأكد من المسارات الصحيحة
 OFFER_FILE = "offer.txt"
 BOOKINGS_FILE = "bookings.json"
 
@@ -13,16 +13,20 @@ def get_current_offer():
     if os.path.exists(OFFER_FILE):
         try:
             with open(OFFER_FILE, "r", encoding="utf-8") as f:
-                return f.read().strip()
-        except: pass
+                content = f.read().strip()
+                return content if content else "أهلاً بكم في Ortho_Psy Tech"
+        except: 
+            pass
     return "أهلاً بكم في Ortho_Psy Tech"
 
 def get_all_bookings():
     if os.path.exists(BOOKINGS_FILE):
         try:
             with open(BOOKINGS_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except: return []
+                data = json.load(f)
+                return data if isinstance(data, list) else []
+        except: 
+            return []
     return []
 
 @app.route('/')
@@ -44,7 +48,7 @@ def login_check():
 
 @app.route('/dashboard')
 def dashboard():
-    # ✅ تم تصحيح الخطأ هنا: تم توحيد اسم المتغير ليكون bookings
+    # جلب المواعيد لعرضها في اللوحة والتأكد من تمريرها باسم bookings
     bookings = get_all_bookings()
     return render_template('dashboard.html', bookings=bookings)
 
@@ -53,7 +57,8 @@ def save_booking():
     """استقبال موعد جديد من صفحة booking وحفظه"""
     try:
         data = request.json
-        data['id'] = datetime.now().strftime("%Y%m%d%H%M%S") # معرف فريد
+        # توليد ID فريد بناءً على الوقت الحالي بالثانية
+        data['id'] = datetime.now().strftime("%Y%m%d%H%M%S") 
         data['date_submitted'] = datetime.now().strftime("%Y-%m-%d %H:%M")
         
         bookings = get_all_bookings()
@@ -69,10 +74,13 @@ def save_booking():
 @app.route('/update_offer', methods=['POST'])
 def update_offer():
     try:
+        # استقبال المحتوى الغني (HTML) من المحرر
         new_text = request.form.get('new_offer')
-        with open(OFFER_FILE, "w", encoding="utf-8") as f:
-            f.write(new_text)
-        return "تم التحديث بنجاح! ✅"
+        if new_text is not None:
+            with open(OFFER_FILE, "w", encoding="utf-8") as f:
+                f.write(new_text)
+            return "تم التحديث بنجاح! ✅"
+        return "المحتوى فارغ", 400
     except Exception as e:
         return f"خطأ: {str(e)}", 500
 
@@ -81,7 +89,7 @@ def delete_booking(booking_id):
     """دالة لحذف موعد معين باستخدام الـ ID"""
     try:
         bookings = get_all_bookings()
-        # تصفية القائمة وحذف الموعد المطلوب
+        # تصفية القائمة وحذف الموعد المطلوب بدقة
         updated_bookings = [b for b in bookings if str(b.get('id')) != str(booking_id)]
         
         with open(BOOKINGS_FILE, "w", encoding="utf-8") as f:
@@ -93,6 +101,14 @@ def delete_booking(booking_id):
 @app.route('/booking')
 def booking():
     return render_template('booking.html')
+
+# أضفنا هذا الجزء لضمان تحديث المتصفح للبيانات فوراً (Cache Control)
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '-1'
+    return response
 
 if __name__ == '__main__':
     app.run(debug=True)
