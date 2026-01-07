@@ -183,40 +183,30 @@
     function saveRichOffer() {
     const richContent = quill.root.innerHTML;
     const btn = document.getElementById('submitBtn');
-    
-    // حساب الحجم الحقيقي بدقة
     const sizeInMB = (new Blob([richContent]).size / (1024 * 1024)).toFixed(2);
     
-    if(sizeInMB > 4) {
-        alert("⚠️ المحتوى ضخم جداً (" + sizeInMB + " MB)! يرجى تصغير الصور.");
-        return;
-    }
-
-    btn.innerText = "جاري النشر... (الحجم: " + sizeInMB + " MB)";
+    btn.innerText = "جاري النشر... (" + sizeInMB + " MB)";
     btn.disabled = true;
 
-    // الطريقة الأكثر استقراراً لنقل النصوص الطويلة جداً والصور
-    let formData = new URLSearchParams();
+    // استخدام FormData لإرسال البيانات بشكل مستقل وآمن
+    let formData = new FormData();
     formData.append('new_offer', richContent);
 
     fetch('/update_offer', { 
         method: 'POST', 
-        body: formData,
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
+        body: formData // لا نضع Headers يدوياً هنا، المتصفح سيتولى الأمر تلقائياً
     })
     .then(async response => {
-        const text = await response.text();
         if (response.ok) {
             alert("✅ تم تحديث الواجهة بنجاح!");
         } else {
+            const text = await response.text();
             throw new Error(text);
         }
     })
     .catch(error => {
-        console.error("Error:", error);
-        alert("❌ فشل التحديث التقني.\nالسبب المحتمل: السيرفر رفض حجم البيانات أو الاتصال انقطع.");
+        console.error("Error details:", error);
+        alert("❌ فشل التحديث.\nتأكد من إعادة تشغيل ملف app.py بعد إضافة سطر MAX_CONTENT_LENGTH.");
     })
     .finally(() => { 
         btn.innerText = "نشر التحديث للواجهة الرئيسية ✨"; 
