@@ -6,7 +6,6 @@
     <title>لوحة التحكم | Ortho_Psy Tech</title>
     
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
     
     <style>
         :root {
@@ -58,8 +57,11 @@
         
         .ql-toolbar { direction: ltr; background: #f8f9fa; }
         .ql-editor { text-align: right; }
-        /* تحسين مظهر مقابض التحكم في الصورة */
-        .ql-image-resize-module { direction: ltr; }
+        
+        /* أزرار الإجراءات في الجدول */
+        .action-btns { display: flex; gap: 5px; }
+        .btn-view { background: var(--accent-blue); color: white; border: none; padding: 5px 12px; border-radius: 5px; cursor: pointer; }
+        .btn-delete { background: #e74c3c; color: white; border: none; padding: 5px 12px; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -100,8 +102,9 @@
                             <td>{{ b.main_name }}</td>
                             <td><a href="tel:{{ b.phone }}" style="color: var(--accent-blue); text-decoration: none;">{{ b.phone }}</a></td>
                             <td><span class="status-badge">جديد</span></td>
-                            <td>
-                                <button onclick="viewDetails('{{ b.main_name }}', '{{ b.problem }}')" style="background: var(--accent-blue); color: white; border: none; padding: 5px 12px; border-radius: 5px; cursor: pointer;">عرض</button>
+                            <td class="action-btns">
+                                <button class="btn-view" onclick="viewDetails('{{ b.main_name }}', '{{ b.problem }}')">عرض</button>
+                                <button class="btn-delete" onclick="deleteBooking('{{ b.id }}')">حذف</button>
                             </td>
                         </tr>
                         {% endfor %}
@@ -118,7 +121,7 @@
         <div class="control-panel">
             <h3>📢 تصميم شريط العروض والنشاطات</h3>
             <p style="color: #7f8c8d; font-size: 0.9rem; margin-bottom: 10px;">
-                ميزة جديدة: اضغط على الصورة داخل المحرر لتصغيرها أو مسحها. 
+                ميزة جديدة: اضغط على الصورة داخل المحرر لتظهر مقابض التحكم في الحجم، أو امسحها بزر Delete.
             </p>
             <div id="editor-wrapper">
                 <div id="editor-container"></div>
@@ -129,9 +132,11 @@
     </div>
 
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="https://cdn.rawgit.com/kensnyder/quill-image-resize-module/3411c3a7/image-resize.min.js"></script>
+
     <script>
-        // تسجيل مكتبة تغيير الحجم
-        Quill.register('modules/imageResize', window.ImageResize.default);
+        // تفعيل موديول تصغير الصور
+        Quill.register('modules/imageResize', ImageResize.default);
 
         var quill = new Quill('#editor-container', {
             theme: 'snow',
@@ -146,12 +151,11 @@
                     ['clean']
                 ],
                 imageResize: {
-                    displaySize: true // يعرض الحجم أثناء التكبير/التصغير
+                    displaySize: true 
                 }
             }
         });
 
-        // مراقبة الحجم الحقيقي للبيانات لمنع فشل النشر
         quill.on('text-change', function() {
             const html = quill.root.innerHTML;
             const size = (new Blob([html]).size / (1024 * 1024)).toFixed(2);
@@ -164,19 +168,22 @@
             alert("صاحب الطلب: " + name + "\n\nوصف الحالة:\n" + problem);
         }
 
+        // دالة حذف الموعد
+        function deleteBooking(bookingId) {
+            if(confirm('هل أنت متأكد من حذف هذا الموعد نهائياً؟')) {
+                fetch('/delete_booking/' + bookingId, { method: 'POST' })
+                .then(r => r.ok ? location.reload() : alert('خطأ في الحذف'))
+                .catch(() => alert('فشل الاتصال بالسيرفر'));
+            }
+        }
+
         function saveRichOffer() {
             const richContent = quill.root.innerHTML;
             const btn = document.getElementById('submitBtn');
-            
-            // فحص الحجم قبل الإرسال
             const sizeInMB = new Blob([richContent]).size / (1024 * 1024);
+            
             if(sizeInMB > 4) {
-                alert("⚠️ المحتوى ضخم جداً! يرجى تصغير الصور أو تقليل عددها لضمان النشر.");
-                return;
-            }
-
-            if(quill.getText().trim().length === 0 && !richContent.includes('<img')) {
-                alert("⚠️ يرجى كتابة محتوى أولاً");
+                alert("⚠️ المحتوى ضخم جداً! يرجى تصغير الصور قبل النشر.");
                 return;
             }
 
@@ -190,12 +197,9 @@
                 method: 'POST', 
                 body: formData 
             })
-            .then(r => {
-                if(!r.ok) throw new Error("السيرفر رفض الحجم الحالي");
-                return r.text();
-            })
-            .then(() => alert("✅ تم تحديث الواجهة الرئيسية بنجاح!"))
-            .catch((err) => alert("❌ فشل التحديث: " + err.message + "\nحاول تصغير الصور أكثر."))
+            .then(r => r.ok ? r.text() : Promise.reject())
+            .then(() => alert("✅ تم تحديث الواجهة بنجاح!"))
+            .catch(() => alert("❌ فشل التحديث: تأكد من حجم الصور."))
             .finally(() => { 
                 btn.innerText = "نشر التحديث للواجهة الرئيسية ✨"; 
                 btn.disabled = false; 
