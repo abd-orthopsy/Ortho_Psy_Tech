@@ -44,9 +44,9 @@ def login_check():
 
 @app.route('/dashboard')
 def dashboard():
-    # جلب المواعيد لعرضها في اللوحة
+    # ✅ تم تصحيح الخطأ هنا: تم توحيد اسم المتغير ليكون bookings
     bookings = get_all_bookings()
-    return render_template('dashboard.html', bookings=all_bookings)
+    return render_template('dashboard.html', bookings=bookings)
 
 @app.route('/save_booking', methods=['POST'])
 def save_booking():
@@ -75,6 +75,20 @@ def update_offer():
         return "تم التحديث بنجاح! ✅"
     except Exception as e:
         return f"خطأ: {str(e)}", 500
+
+@app.route('/delete_booking/<booking_id>', methods=['POST'])
+def delete_booking(booking_id):
+    """دالة لحذف موعد معين باستخدام الـ ID"""
+    try:
+        bookings = get_all_bookings()
+        # تصفية القائمة وحذف الموعد المطلوب
+        updated_bookings = [b for b in bookings if str(b.get('id')) != str(booking_id)]
+        
+        with open(BOOKINGS_FILE, "w", encoding="utf-8") as f:
+            json.dump(updated_bookings, f, ensure_ascii=False, indent=4)
+        return "تم الحذف"
+    except Exception as e:
+        return str(e), 500
 
 @app.route('/booking')
 def booking():
