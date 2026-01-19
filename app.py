@@ -12,6 +12,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 OFFER_FILE = "offer.txt"
 BOOKINGS_FILE = "bookings.json"
 EXAMINEES_FILE = "examinees.json" # ملف قاعدة بيانات المفحوصين
+TOOLS_FILE = "tools.json"        # ملف روابط الأدوات الخارجية
 
 def get_current_offer():
     if os.path.exists(OFFER_FILE):
@@ -46,6 +47,16 @@ def get_all_examinees():
         except: return []
     return []
 
+def get_all_tools():
+    """جلب روابط الأدوات المضافة"""
+    if os.path.exists(TOOLS_FILE):
+        try:
+            with open(TOOLS_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                return data if isinstance(data, list) else []
+        except: return []
+    return []
+
 @app.route('/')
 def index():
     current_text = get_current_offer()
@@ -67,7 +78,8 @@ def login_check():
 def dashboard():
     bookings = get_all_bookings()
     examinees = get_all_examinees() # جلب قائمة المفحوصين
-    return render_template('dashboard.html', bookings=bookings, examinees=examinees)
+    tools = get_all_tools()         # جلب قائمة الأدوات المضافة
+    return render_template('dashboard.html', bookings=bookings, examinees=examinees, tools=tools)
 
 @app.route('/save_booking', methods=['POST'])
 def save_booking():
@@ -132,6 +144,22 @@ def delete_booking(booking_id):
         with open(BOOKINGS_FILE, "w", encoding="utf-8") as f:
             json.dump(updated_bookings, f, ensure_ascii=False, indent=4)
         return "تم الحذف"
+    except Exception as e:
+        return str(e), 500
+
+@app.route('/add_tool', methods=['POST'])
+def add_tool():
+    """إضافة رابط أداة جديدة (PythonAnywhere)"""
+    try:
+        name = request.form.get('tool_name')
+        url = request.form.get('tool_url')
+        if name and url:
+            tools = get_all_tools()
+            tools.append({"name": name, "url": url})
+            with open(TOOLS_FILE, "w", encoding="utf-8") as f:
+                json.dump(tools, f, ensure_ascii=False, indent=4)
+            return "تمت إضافة الأداة بنجاح ✅"
+        return "بيانات ناقصة", 400
     except Exception as e:
         return str(e), 500
 
