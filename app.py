@@ -8,11 +8,14 @@ app = Flask(__name__)
 # ✅ رفع سقف حجم البيانات المسموح بها إلى 16 ميجابايت
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-# 📝 ملفات التخزين
-OFFER_FILE = "offer.txt"
-BOOKINGS_FILE = "bookings.json"
-EXAMINEES_FILE = "examinees.json" # ملف قاعدة بيانات المفحوصين
-TOOLS_FILE = "tools.json"        # ملف روابط الأدوات الخارجية
+# 🛠️ الحل الجذري: تحديد المسار المطلق لمجلد المشروع
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# 📝 ملفات التخزين بمسارات ثابتة لا تتغير بتغير حالة السيرفر
+OFFER_FILE = os.path.join(BASE_DIR, "offer.txt")
+BOOKINGS_FILE = os.path.join(BASE_DIR, "bookings.json")
+EXAMINEES_FILE = os.path.join(BASE_DIR, "examinees.json")
+TOOLS_FILE = os.path.join(BASE_DIR, "tools.json")
 
 def get_current_offer():
     if os.path.exists(OFFER_FILE):
@@ -28,7 +31,6 @@ def get_all_bookings():
         try:
             with open(BOOKINGS_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                # ترتيب المواعيد: الأحدث يظهر أولاً
                 if isinstance(data, list):
                     return sorted(data, key=lambda x: x.get('date_submitted', ''), reverse=True)
                 return []
@@ -36,7 +38,6 @@ def get_all_bookings():
     return []
 
 def get_all_examinees():
-    """جلب سجل المفحوصين"""
     if os.path.exists(EXAMINEES_FILE):
         try:
             with open(EXAMINEES_FILE, "r", encoding="utf-8") as f:
@@ -48,7 +49,6 @@ def get_all_examinees():
     return []
 
 def get_all_tools():
-    """جلب روابط الأدوات المضافة"""
     if os.path.exists(TOOLS_FILE):
         try:
             with open(TOOLS_FILE, "r", encoding="utf-8") as f:
@@ -77,8 +77,8 @@ def login_check():
 @app.route('/dashboard')
 def dashboard():
     bookings = get_all_bookings()
-    examinees = get_all_examinees() # جلب قائمة المفحوصين
-    tools = get_all_tools()         # جلب قائمة الأدوات المضافة
+    examinees = get_all_examinees()
+    tools = get_all_tools()
     return render_template('dashboard.html', bookings=bookings, examinees=examinees, tools=tools)
 
 @app.route('/save_booking', methods=['POST'])
@@ -109,28 +109,18 @@ def update_offer():
 
 @app.route('/convert_to_examinee/<booking_id>', methods=['POST'])
 def convert_to_examinee(booking_id):
-    """تحويل موعد إلى سجل مفحوص دائم"""
     try:
         bookings = get_all_bookings()
         examinees = get_all_examinees()
-        
-        # البحث عن الموعد المطلوب
         target_booking = next((b for b in bookings if str(b.get('id')) == str(booking_id)), None)
-        
         if target_booking:
-            # إضافة تاريخ التحويل
             target_booking['converted_at'] = datetime.now().strftime("%Y-%m-%d %H:%M")
             examinees.append(target_booking)
-            
-            # حذف الموعد من القائمة المؤقتة
             updated_bookings = [b for b in bookings if str(b.get('id')) != str(booking_id)]
-            
-            # حفظ الملفين
             with open(BOOKINGS_FILE, "w", encoding="utf-8") as f:
                 json.dump(updated_bookings, f, ensure_ascii=False, indent=4)
             with open(EXAMINEES_FILE, "w", encoding="utf-8") as f:
                 json.dump(examinees, f, ensure_ascii=False, indent=4)
-                
             return "تم تحويله إلى قائمة المفحوصين ✅"
         return "الموعد غير موجود", 404
     except Exception as e:
@@ -149,17 +139,28 @@ def delete_booking(booking_id):
 
 @app.route('/add_tool', methods=['POST'])
 def add_tool():
-    """إضافة رابط أداة جديدة (PythonAnywhere)"""
     try:
         name = request.form.get('tool_name')
         url = request.form.get('tool_url')
         if name and url:
             tools = get_all_tools()
-            tools.append({"name": name, "url": url})
+            tool_id = datetime.now().strftime("%Y%m%d%H%M%S")
+            tools.append({"id": tool_id, "name": name, "url": url})
             with open(TOOLS_FILE, "w", encoding="utf-8") as f:
                 json.dump(tools, f, ensure_ascii=False, indent=4)
             return "تمت إضافة الأداة بنجاح ✅"
         return "بيانات ناقصة", 400
+    except Exception as e:
+        return str(e), 500
+
+@app.route('/delete_tool/<tool_id>', methods=['POST'])
+def delete_tool(tool_id):
+    try:
+        tools = get_all_tools()
+        updated_tools = [t for t in tools if str(t.get('id')) != str(tool_id)]
+        with open(TOOLS_FILE, "w", encoding="utf-8") as f:
+            json.dump(updated_tools, f, ensure_ascii=False, indent=4)
+        return "تم حذف الأداة بنجاح"
     except Exception as e:
         return str(e), 500
 
@@ -170,7 +171,6 @@ def booking():
 @app.route('/examinee_file/<examinee_id>')
 def examinee_file(examinee_id):
     examinees = get_all_examinees()
-    # البحث عن المفحوص المطلوب
     examinee = next((e for e in examinees if str(e.get('id')) == str(examinee_id)), None)
     if examinee:
         return render_template('examinee_profile.html', e=examinee)
