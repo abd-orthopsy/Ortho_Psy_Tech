@@ -1,1 +1,143 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} | Ortho_Psy Tech</title>
+    <style>
+        :root {
+            --brand-bg: #2c3e50;
+            --gold: #f1c40f;
+            --accent-blue: #3498db;
+            --bg-gray: #f4f7f6;
+            --white: #ffffff;
+            --danger: #e74c3c;
+            --success: #27ae60;
+        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-gray); margin: 0; padding: 20px; }
+        
+        .header { background: var(--brand-bg); color: white; padding: 20px; border-radius: 15px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .header h1 { margin: 0; font-size: 1.5rem; color: var(--gold); }
+        .logout-btn { color: white; text-decoration: none; font-weight: bold; background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 8px; }
 
+        .section-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 25px; border-top: 5px solid var(--accent-blue); }
+        .section-title { color: var(--brand-bg); border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+
+        .tool-form { display: grid; grid-template-columns: 2fr 3fr auto; gap: 10px; margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 10px; }
+        .tool-input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; }
+        .add-btn { background: var(--success); color: white; border: none; padding: 10px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+
+        .tools-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .tools-table th { text-align: right; background: #f8f9fa; padding: 12px; font-size: 0.85rem; color: #666; }
+        .tools-table td { padding: 12px; border-bottom: 1px solid #eee; }
+        .tool-link { color: var(--accent-blue); text-decoration: none; font-size: 0.9rem; }
+        .delete-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-weight: bold; font-size: 1.2rem; }
+
+        @media (max-width: 768px) {
+            .tool-form { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>{{ title }}</h1>
+        <a href="/login" class="logout-btn">🚪 خروج</a>
+    </div>
+
+    <div class="section-card" style="border-top-color: #3498db;">
+        <div class="section-title">📊 أدوات التقييم (Assessment Tools)</div>
+        <div class="tool-form">
+            <input type="text" id="name_eval" class="tool-input" placeholder="اسم أداة التقييم">
+            <input type="text" id="url_eval" class="tool-input" placeholder="رابط الأداة (https://...)">
+            <button onclick="addTool('eval', 'تقييم')" class="add-btn">+ إضافة</button>
+        </div>
+        <table class="tools-table" id="table_eval">
+            <thead><tr><th>اسم الأداة</th><th>الرابط</th><th>حذف</th></tr></thead>
+            <tbody>
+                {% for tool in tools if tool.category == 'تقييم' %}
+                <tr>
+                    <td><strong>{{ tool.name }}</strong></td>
+                    <td><a href="{{ tool.url }}" target="_blank" class="tool-link">فتح الرابط 🔗</a></td>
+                    <td><button class="delete-btn" onclick="deleteTool('{{ tool.id }}')">×</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section-card" style="border-top-color: #9b59b6;">
+        <div class="section-title">🔍 أدوات التشخيص (Diagnostic Tools)</div>
+        <div class="tool-form">
+            <input type="text" id="name_diag" class="tool-input" placeholder="اسم أداة التشخيص">
+            <input type="text" id="url_diag" class="tool-input" placeholder="رابط الأداة (https://...)">
+            <button onclick="addTool('diag', 'تشخيص')" class="add-btn">+ إضافة</button>
+        </div>
+        <table class="tools-table" id="table_diag">
+            <thead><tr><th>اسم الأداة</th><th>الرابط</th><th>حذف</th></tr></thead>
+            <tbody>
+                {% for tool in tools if tool.category == 'تشخيص' %}
+                <tr>
+                    <td><strong>{{ tool.name }}</strong></td>
+                    <td><a href="{{ tool.url }}" target="_blank" class="tool-link">فتح الرابط 🔗</a></td>
+                    <td><button class="delete-btn" onclick="deleteTool('{{ tool.id }}')">×</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section-card" style="border-top-color: #27ae60;">
+        <div class="section-title">🛠️ أدوات التأهيل والعلاج (Rehabilitation)</div>
+        <div class="tool-form">
+            <input type="text" id="name_rehab" class="tool-input" placeholder="اسم أداة التأهيل/العلاج">
+            <input type="text" id="url_rehab" class="tool-input" placeholder="رابط الأداة (https://...)">
+            <button onclick="addTool('rehab', 'تأهيل')" class="add-btn">+ إضافة</button>
+        </div>
+        <table class="tools-table" id="table_rehab">
+            <thead><tr><th>اسم الأداة</th><th>الرابط</th><th>حذف</th></tr></thead>
+            <tbody>
+                {% for tool in tools if tool.category == 'تأهيل' %}
+                <tr>
+                    <td><strong>{{ tool.name }}</strong></td>
+                    <td><a href="{{ tool.url }}" target="_blank" class="tool-link">فتح الرابط 🔗</a></td>
+                    <td><button class="delete-btn" onclick="deleteTool('{{ tool.id }}')">×</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function addTool(prefix, categoryName) {
+            const name = document.getElementById('name_' + prefix).value;
+            const url = document.getElementById('url_' + prefix).value;
+
+            if(!name || !url) {
+                alert("يرجى إدخال الاسم والرابط معاً");
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append('tool_name', name);
+            formData.append('tool_url', url);
+            formData.append('tool_category', categoryName);
+
+            fetch('{{ post_url }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.ok ? location.reload() : alert("فشل في الحفظ"))
+            .catch(() => alert("خطأ في الاتصال بالسيرفر"));
+        }
+
+        function deleteTool(toolId) {
+            if(confirm('هل أنت متأكد من حذف هذه الأداة؟')) {
+                fetch('{{ delete_url }}/' + toolId, { method: 'POST' })
+                .then(r => r.ok ? location.reload() : alert("فشل الحذف"))
+                .catch(() => alert("خطأ في الاتصال"));
+            }
+        }
+    </script>
+</body>
+                  </html>
