@@ -82,7 +82,6 @@
             btn.disabled = true;
             errorBox.style.display = "none";
 
-            // إرسال البيانات إلى السيرفر للتحقق
             let formData = new FormData(this);
 
             fetch('/login_check', {
@@ -91,7 +90,8 @@
             })
             .then(response => response.json())
             .then(data => {
-                if(data.success) {
+                if(data.success && data.redirect) {
+                    // التوجيه الديناميكي بناءً على رد السيرفر
                     window.location.href = data.redirect;
                 } else {
                     errorBox.style.display = "block";
@@ -99,8 +99,10 @@
                     btn.disabled = false;
                 }
             })
-            .catch(() => {
-                alert("خطأ في الاتصال بالسيرفر");
+            .catch((err) => {
+                console.error("Login Error:", err);
+                alert("خطأ في الاتصال بالسيرفر، يرجى التأكد من عمل Reload للموقع");
+                btn.innerText = "تسجيل الدخول";
                 btn.disabled = false;
             });
         }
