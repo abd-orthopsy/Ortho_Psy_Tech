@@ -8,15 +8,20 @@ app = Flask(__name__)
 # ✅ رفع سقف حجم البيانات المسموح بها إلى 16 ميجابايت
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-# 🛠️ الحل الجذري: تحديد المسار المطلق لمجلد المشروع
+# 🛠️ تحديد المسار المطلق لضمان عدم ضياع البيانات
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# 📝 ملفات التخزين بمسارات ثابتة لا تتغير بتغير حالة السيرفر
+# 📝 ملفات التخزين الأساسية (الإدارة الملكية)
 OFFER_FILE = os.path.join(BASE_DIR, "offer.txt")
 BOOKINGS_FILE = os.path.join(BASE_DIR, "bookings.json")
 EXAMINEES_FILE = os.path.join(BASE_DIR, "examinees.json")
-TOOLS_FILE = os.path.join(BASE_DIR, "tools.json")
 
+# 📂 ملفات تخزين الأدوات حسب الأقسام (النظام الجديد)
+ORTHO_TOOLS_FILE = os.path.join(BASE_DIR, "ortho_tools.json")
+PSY_TOOLS_FILE = os.path.join(BASE_DIR, "psy_tools.json")
+RESEARCH_TOOLS_FILE = os.path.join(BASE_DIR, "research_tools.json")
+
+# --- دالات جلب البيانات الأساسية ---
 def get_current_offer():
     if os.path.exists(OFFER_FILE):
         try:
@@ -48,15 +53,17 @@ def get_all_examinees():
         except: return []
     return []
 
-def get_all_tools():
-    if os.path.exists(TOOLS_FILE):
+# --- دالات جلب أدوات الأقسام ---
+def get_tools_by_file(file_path):
+    if os.path.exists(file_path):
         try:
-            with open(TOOLS_FILE, "r", encoding="utf-8") as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 return data if isinstance(data, list) else []
         except: return []
     return []
 
+# --- المسارات الأساسية ---
 @app.route('/')
 def index():
     current_text = get_current_offer()
@@ -70,17 +77,91 @@ def login():
 def login_check():
     user = request.form.get('username')
     pw = request.form.get('password')
+    
+    # 1. الإدارة الملكية
     if user == "admin" and pw == "1234":
         return jsonify({"success": True, "redirect": "/dashboard"})
+    # 2. قسم الأرطفونيا
+    elif user == "ortho_admin" and pw == "ortho2026":
+        return jsonify({"success": True, "redirect": "/dashboard_ortho"})
+    # 3. قسم العيادي
+    elif user == "psy_admin" and pw == "psy2026":
+        return jsonify({"success": True, "redirect": "/dashboard_psy"})
+    # 4. قسم البحث
+    elif user == "research_admin" and pw == "res2026":
+        return jsonify({"success": True, "redirect": "/dashboard_research"})
+        
     return jsonify({"success": False})
 
+# --- لوحة تحكم الإدارة الملكية (المواعيد والمفحوصين فقط) ---
 @app.route('/dashboard')
 def dashboard():
     bookings = get_all_bookings()
     examinees = get_all_examinees()
-    tools = get_all_tools()
-    return render_template('dashboard.html', bookings=bookings, examinees=examinees, tools=tools)
+    return render_template('dashboard.html', bookings=bookings, examinees=examinees)
 
+# --- لوحات تحكم الأقسام (إدارة الأدوات) ---
+@app.route('/dashboard_ortho')
+def dashboard_ortho():
+    tools = get_tools_by_file(ORTHO_TOOLS_FILE)
+    return render_template('dept_dashboard.html', title="قسم الأرطفونيا Ortho Tech", tools=tools, post_url="/add_ortho_tool", delete_url="/delete_ortho_tool")
+
+@app.route('/dashboard_psy')
+def dashboard_psy():
+    tools = get_tools_by_file(PSY_TOOLS_FILE)
+    return render_template('dept_dashboard.html', title="قسم علم النفس Psy Tech", tools=tools, post_url="/add_psy_tool", delete_url="/delete_psy_tool")
+
+@app.route('/dashboard_research')
+def dashboard_research():
+    tools = get_tools_by_file(RESEARCH_TOOLS_FILE)
+    return render_template('dept_dashboard.html', title="قسم البحث العلمي Research Tech", tools=tools, post_url="/add_research_tool", delete_url="/delete_research_tool")
+
+# --- دالات إضافة الأدوات (المسارات الثلاثة) ---
+def save_tool_to_dept(file_path):
+    try:
+        name = request.form.get('tool_name')
+        url = request.form.get('tool_url')
+        cat = request.form.get('tool_category') # (تقييم / تشخيص / علاج)
+        if name and url and cat:
+            tools = get_tools_by_file(file_path)
+            tool_id = datetime.now().strftime("%Y%m%d%H%M%S")
+            tools.append({"id": tool_id, "name": name, "url": url, "category": cat})
+            with open(file_path, "w", encoding="utf-8") as f:
+                json.dump(tools, f, ensure_ascii=False, indent=4)
+            return "تمت إضافة الأداة بنجاح ✅"
+        return "بيانات ناقصة", 400
+    except Exception as e:
+        return str(e), 500
+
+@app.route('/add_ortho_tool', methods=['POST'])
+def add_ortho_tool(): return save_tool_to_dept(ORTHO_TOOLS_FILE)
+
+@app.route('/add_psy_tool', methods=['POST'])
+def add_psy_tool(): return save_tool_to_dept(PSY_TOOLS_FILE)
+
+@app.route('/add_research_tool', methods=['POST'])
+def add_research_tool(): return save_tool_to_dept(RESEARCH_TOOLS_FILE)
+
+# --- دالات حذف الأدوات ---
+def delete_tool_from_dept(file_path, tool_id):
+    try:
+        tools = get_tools_by_file(file_path)
+        updated = [t for t in tools if str(t.get('id')) != str(tool_id)]
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump(updated, f, ensure_ascii=False, indent=4)
+        return "تم الحذف"
+    except Exception as e: return str(e), 500
+
+@app.route('/delete_ortho_tool/<tool_id>', methods=['POST'])
+def delete_ortho_tool(tool_id): return delete_tool_from_dept(ORTHO_TOOLS_FILE, tool_id)
+
+@app.route('/delete_psy_tool/<tool_id>', methods=['POST'])
+def delete_psy_tool(tool_id): return delete_tool_from_dept(PSY_TOOLS_FILE, tool_id)
+
+@app.route('/delete_research_tool/<tool_id>', methods=['POST'])
+def delete_research_tool(tool_id): return delete_tool_from_dept(RESEARCH_TOOLS_FILE, tool_id)
+
+# --- مسارات الحجوزات والمفحوصين (الأصلية كما هي) ---
 @app.route('/save_booking', methods=['POST'])
 def save_booking():
     try:
@@ -134,33 +215,6 @@ def delete_booking(booking_id):
         with open(BOOKINGS_FILE, "w", encoding="utf-8") as f:
             json.dump(updated_bookings, f, ensure_ascii=False, indent=4)
         return "تم الحذف"
-    except Exception as e:
-        return str(e), 500
-
-@app.route('/add_tool', methods=['POST'])
-def add_tool():
-    try:
-        name = request.form.get('tool_name')
-        url = request.form.get('tool_url')
-        if name and url:
-            tools = get_all_tools()
-            tool_id = datetime.now().strftime("%Y%m%d%H%M%S")
-            tools.append({"id": tool_id, "name": name, "url": url})
-            with open(TOOLS_FILE, "w", encoding="utf-8") as f:
-                json.dump(tools, f, ensure_ascii=False, indent=4)
-            return "تمت إضافة الأداة بنجاح ✅"
-        return "بيانات ناقصة", 400
-    except Exception as e:
-        return str(e), 500
-
-@app.route('/delete_tool/<tool_id>', methods=['POST'])
-def delete_tool(tool_id):
-    try:
-        tools = get_all_tools()
-        updated_tools = [t for t in tools if str(t.get('id')) != str(tool_id)]
-        with open(TOOLS_FILE, "w", encoding="utf-8") as f:
-            json.dump(updated_tools, f, ensure_ascii=False, indent=4)
-        return "تم حذف الأداة بنجاح"
     except Exception as e:
         return str(e), 500
 
