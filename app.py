@@ -4,7 +4,6 @@ import json
 from datetime import datetime
 
 # 🛠️ تحديد المسارات المطلقة لضمان عمل Render بشكل صحيح
-# هذا السطر يحدد المجلد الرئيسي للمشروع بدقة
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 
@@ -95,28 +94,28 @@ def login_check():
         
     return jsonify({"success": False})
 
-# --- لوحة تحكم الإدارة الملكية ---
+# --- لوحة تحكم الإدارة الملكية (تستخدم dashboard.html الموحد) ---
 @app.route('/dashboard')
 def dashboard():
     bookings = get_all_bookings()
     examinees = get_all_examinees()
-    return render_template('dashboard.html', bookings=bookings, examinees=examinees)
+    return render_template('dashboard.html', bookings=bookings, examinees=examinees, is_dept=False)
 
-# --- لوحات تحكم الأقسام ---
+# --- لوحات تحكم الأقسام (تم توجيهها لملف dashboard.html الموحد) ---
 @app.route('/dashboard_ortho')
 def dashboard_ortho():
     tools = get_tools_by_file(ORTHO_TOOLS_FILE)
-    return render_template('dept_dashboard.html', title="قسم الأرطفونيا Ortho Tech", tools=tools, post_url="/add_ortho_tool", delete_url="/delete_ortho_tool")
+    return render_template('dashboard.html', title="قسم الأرطفونيا Ortho Tech", tools=tools, is_dept=True, post_url="/add_ortho_tool", delete_url="/delete_ortho_tool")
 
 @app.route('/dashboard_psy')
 def dashboard_psy():
     tools = get_tools_by_file(PSY_TOOLS_FILE)
-    return render_template('dept_dashboard.html', title="قسم علم النفس Psy Tech", tools=tools, post_url="/add_psy_tool", delete_url="/delete_psy_tool")
+    return render_template('dashboard.html', title="قسم علم النفس Psy Tech", tools=tools, is_dept=True, post_url="/add_psy_tool", delete_url="/delete_psy_tool")
 
 @app.route('/dashboard_research')
 def dashboard_research():
     tools = get_tools_by_file(RESEARCH_TOOLS_FILE)
-    return render_template('dept_dashboard.html', title="قسم البحث العلمي Research Tech", tools=tools, post_url="/add_research_tool", delete_url="/delete_research_tool")
+    return render_template('dashboard.html', title="قسم البحث العلمي Research Tech", tools=tools, is_dept=True, post_url="/add_research_tool", delete_url="/delete_research_tool")
 
 # --- دالات إضافة الأدوات ---
 def save_tool_to_dept(file_path):
@@ -163,7 +162,7 @@ def delete_psy_tool(tool_id): return delete_tool_from_dept(PSY_TOOLS_FILE, tool_
 @app.route('/delete_research_tool/<tool_id>', methods=['POST'])
 def delete_research_tool(tool_id): return delete_tool_from_dept(RESEARCH_TOOLS_FILE, tool_id)
 
-# --- مسارات الحجوزات والمفحوصين ---
+# --- مسارات الحجوزات والمفحوصين (الأصلية كما هي) ---
 @app.route('/save_booking', methods=['POST'])
 def save_booking():
     try:
@@ -233,6 +232,5 @@ def examinee_file(examinee_id):
     return "المفحوص غير موجود", 404
     
 if __name__ == '__main__':
-    # Render يتطلب الاستماع على المنفذ الممرر في متغيرات البيئة
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
