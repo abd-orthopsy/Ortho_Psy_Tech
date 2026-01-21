@@ -3,15 +3,17 @@ import os
 import json
 from datetime import datetime
 
-app = Flask(__name__)
+# 🛠️ تحديد المسارات المطلقة لضمان عمل Render بشكل صحيح
+# هذا السطر يحدد المجلد الرئيسي للمشروع بدقة
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
+
+app = Flask(__name__, template_folder=TEMPLATE_DIR)
 
 # ✅ رفع سقف حجم البيانات المسموح بها إلى 16 ميجابايت
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-# 🛠️ تحديد المسار المطلق لضمان عدم ضياع البيانات
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# 📝 ملفات التخزين الأساسية (الإدارة الملكية)
+# 📝 ملفات التخزين الأساسية (الإدارة الملكية) باستخدام المسار المطلق
 OFFER_FILE = os.path.join(BASE_DIR, "offer.txt")
 BOOKINGS_FILE = os.path.join(BASE_DIR, "bookings.json")
 EXAMINEES_FILE = os.path.join(BASE_DIR, "examinees.json")
@@ -93,14 +95,14 @@ def login_check():
         
     return jsonify({"success": False})
 
-# --- لوحة تحكم الإدارة الملكية (المواعيد والمفحوصين فقط) ---
+# --- لوحة تحكم الإدارة الملكية ---
 @app.route('/dashboard')
 def dashboard():
     bookings = get_all_bookings()
     examinees = get_all_examinees()
     return render_template('dashboard.html', bookings=bookings, examinees=examinees)
 
-# --- لوحات تحكم الأقسام (إدارة الأدوات) ---
+# --- لوحات تحكم الأقسام ---
 @app.route('/dashboard_ortho')
 def dashboard_ortho():
     tools = get_tools_by_file(ORTHO_TOOLS_FILE)
@@ -116,12 +118,12 @@ def dashboard_research():
     tools = get_tools_by_file(RESEARCH_TOOLS_FILE)
     return render_template('dept_dashboard.html', title="قسم البحث العلمي Research Tech", tools=tools, post_url="/add_research_tool", delete_url="/delete_research_tool")
 
-# --- دالات إضافة الأدوات (المسارات الثلاثة) ---
+# --- دالات إضافة الأدوات ---
 def save_tool_to_dept(file_path):
     try:
         name = request.form.get('tool_name')
         url = request.form.get('tool_url')
-        cat = request.form.get('tool_category') # (تقييم / تشخيص / علاج)
+        cat = request.form.get('tool_category')
         if name and url and cat:
             tools = get_tools_by_file(file_path)
             tool_id = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -161,7 +163,7 @@ def delete_psy_tool(tool_id): return delete_tool_from_dept(PSY_TOOLS_FILE, tool_
 @app.route('/delete_research_tool/<tool_id>', methods=['POST'])
 def delete_research_tool(tool_id): return delete_tool_from_dept(RESEARCH_TOOLS_FILE, tool_id)
 
-# --- مسارات الحجوزات والمفحوصين (الأصلية كما هي) ---
+# --- مسارات الحجوزات والمفحوصين ---
 @app.route('/save_booking', methods=['POST'])
 def save_booking():
     try:
@@ -231,4 +233,6 @@ def examinee_file(examinee_id):
     return "المفحوص غير موجود", 404
     
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Render يتطلب الاستماع على المنفذ الممرر في متغيرات البيئة
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
