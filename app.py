@@ -94,28 +94,29 @@ def login_check():
         
     return jsonify({"success": False})
 
-# --- لوحة تحكم الإدارة الملكية (تستخدم dashboard.html الموحد) ---
+# --- لوحة تحكم الإدارة الملكية (تستخدم dashboard.html الأصلي) ---
 @app.route('/dashboard')
 def dashboard():
     bookings = get_all_bookings()
     examinees = get_all_examinees()
-    return render_template('dashboard.html', bookings=bookings, examinees=examinees, is_dept=False)
+    # هنا الإدارة العامة تبقى كما هي بدون تغيير is_dept
+    return render_template('dashboard.html', bookings=bookings, examinees=examinees)
 
-# --- لوحات تحكم الأقسام (تم توجيهها لملف dashboard.html الموحد) ---
+# --- لوحات تحكم الأقسام التقنية (تستخدم dept_dashboard.html حصراً) ---
 @app.route('/dashboard_ortho')
 def dashboard_ortho():
     tools = get_tools_by_file(ORTHO_TOOLS_FILE)
-    return render_template('dashboard.html', title="قسم الأرطفونيا Ortho Tech", tools=tools, is_dept=True, post_url="/add_ortho_tool", delete_url="/delete_ortho_tool")
+    return render_template('dept_dashboard.html', title="قسم الأرطفونيا Ortho Tech", tools=tools, post_url="/add_ortho_tool", delete_url="/delete_ortho_tool")
 
 @app.route('/dashboard_psy')
 def dashboard_psy():
     tools = get_tools_by_file(PSY_TOOLS_FILE)
-    return render_template('dashboard.html', title="قسم علم النفس Psy Tech", tools=tools, is_dept=True, post_url="/add_psy_tool", delete_url="/delete_psy_tool")
+    return render_template('dept_dashboard.html', title="قسم علم النفس Psy Tech", tools=tools, post_url="/add_psy_tool", delete_url="/delete_psy_tool")
 
 @app.route('/dashboard_research')
 def dashboard_research():
     tools = get_tools_by_file(RESEARCH_TOOLS_FILE)
-    return render_template('dashboard.html', title="قسم البحث العلمي Research Tech", tools=tools, is_dept=True, post_url="/add_research_tool", delete_url="/delete_research_tool")
+    return render_template('dept_dashboard.html', title="قسم البحث العلمي Research Tech", tools=tools, post_url="/add_research_tool", delete_url="/delete_research_tool")
 
 # --- دالات إضافة الأدوات ---
 def save_tool_to_dept(file_path):
