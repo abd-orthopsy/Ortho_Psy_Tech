@@ -103,17 +103,17 @@ def dashboard():
     return render_template('dashboard.html', bookings=bookings, examinees=examinees)
 
 # --- لوحات تحكم الأقسام التقنية (تستخدم dept_dashboard.html حصراً) ---
-@app.route('/dashboard_ortho')
+@app.route('/ortho-tech')
 def dashboard_ortho():
     tools = get_tools_by_file(ORTHO_TOOLS_FILE)
     return render_template('dept_dashboard.html', title="قسم الأرطفونيا Ortho Tech", tools=tools, post_url="/add_ortho_tool", delete_url="/delete_ortho_tool")
 
-@app.route('/dashboard_psy')
+@app.route('/psy-tech')
 def dashboard_psy():
     tools = get_tools_by_file(PSY_TOOLS_FILE)
     return render_template('dept_dashboard.html', title="قسم علم النفس Psy Tech", tools=tools, post_url="/add_psy_tool", delete_url="/delete_psy_tool")
 
-@app.route('/dashboard_research')
+@app.route('/research-tech')
 def dashboard_research():
     tools = get_tools_by_file(RESEARCH_TOOLS_FILE)
     return render_template('dept_dashboard.html', title="قسم البحث العلمي Research Tech", tools=tools, post_url="/add_research_tool", delete_url="/delete_research_tool")
