@@ -97,10 +97,14 @@ def login_check():
 # --- لوحة تحكم الإدارة الملكية (تستخدم dashboard.html الأصلي) ---
 @app.route('/dashboard')
 def dashboard():
-    bookings = get_all_bookings()
-    examinees = get_all_examinees()
-    # هنا الإدارة العامة تبقى كما هي بدون تغيير is_dept
-    return render_template('dashboard.html', bookings=bookings, examinees=examinees)
+    # جلب البيانات من الملفات مباشرة لضمان عدم ضياعها
+    all_bookings = get_all_bookings()
+    all_examinees = get_all_examinees()
+    
+    # التأكد من إرسال البيانات بأسماء المتغيرات التي يتوقعها ملف HTML
+    return render_template('dashboard.html', 
+                           bookings=all_bookings, 
+                           examinees=all_examinees)
 
 # --- لوحات تحكم الأقسام التقنية (تستخدم dept_dashboard.html حصراً) ---
 @app.route('/ortho-tech')
