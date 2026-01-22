@@ -2,69 +2,147 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>الملف الإكلينيكي | {{ e.main_name }}</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الملف الإكلينيكي: {{ e.main_name }}</title>
     <style>
-        :root { --brand-bg: #2c3e50; --gold: #f1c40f; --white: #ffffff; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
-        .profile-container { max-width: 1000px; margin: 0 auto; }
-        .header-card { background: var(--brand-bg); color: white; padding: 25px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 5px solid var(--gold); }
-        .main-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-top: 20px; }
-        .info-card, .evolution-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .timeline-item { border-right: 3px solid var(--gold); padding: 15px; margin-bottom: 15px; background: #fafafa; position: relative; }
-        .timeline-date { font-size: 0.8rem; color: #7f8c8d; }
-        .btn-add { background: var(--brand-bg); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+        :root { 
+            --main: #2c3e50; 
+            --gold: #f1c40f; 
+            --bg: #f4f7f6; 
+            --success: #27ae60;
+        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.1); }
+        
+        .header { 
+            border-bottom: 3px solid var(--gold); 
+            padding-bottom: 15px; 
+            margin-bottom: 25px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .section { 
+            background: #f9f9f9; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-bottom: 20px; 
+            border-right: 5px solid var(--main); 
+            transition: 0.3s;
+        }
+        .section:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        
+        .section h3 { margin-top: 0; color: var(--main); display: flex; align-items: center; gap: 10px; }
+        
+        textarea { 
+            width: 100%; 
+            height: 100px; 
+            margin-top: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+            padding: 12px; 
+            font-family: inherit; 
+            font-size: 1rem;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        
+        .save-btn { 
+            background: var(--main); 
+            color: white; 
+            border: none; 
+            padding: 10px 25px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            float: left; 
+            margin-top: 10px; 
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .save-btn:hover { background: var(--success); }
+        
+        .data-label { font-weight: bold; color: #555; }
+        .back-link { text-decoration: none; color: var(--main); font-weight: bold; display: flex; align-items: center; gap: 5px; }
     </style>
 </head>
 <body>
-    <div class="profile-container">
-        <div class="header-card">
-            <div>
-                <h1><i class="fas fa-user-md"></i> الملف الإكلينيكي الإلكتروني</h1>
-                <p>المفحوص: <strong>{{ e.main_name }}</strong> | كود المرجع: #{{ e.id }}</p>
-            </div>
-            <a href="/dashboard" style="color: var(--gold); text-decoration: none;"><i class="fas fa-arrow-left"></i> العودة للوحة الإدارة</a>
+    <div class="container">
+        <div class="header">
+            <h2>📂 الملف الإكلينيكي الإلكتروني</h2>
+            <a href="/dashboard" class="back-link">⬅️ العودة للإدارة</a>
         </div>
 
-        <div class="main-grid">
-            <div class="info-card">
-                <h3><i class="fas fa-id-card"></i> بيانات الحالة</h3>
-                <hr>
-                <p><strong>نوع الفحص:</strong> {{ e.user_type }}</p>
-                <p><strong>الهاتف:</strong> {{ e.phone }}</p>
-                <p><strong>تاريخ التسجيل:</strong> {{ e.converted_at }}</p>
-                <p><strong>التشخيص المبدئي:</strong> <br> <small>{{ e.problem }}</small></p>
-            </div>
+        <div class="section">
+            <h3>👤 معلومات عامة (إضافية)</h3>
+            <p><span class="data-label">الاسم:</span> {{ e.main_name }} | <span class="data-label">الهاتف:</span> {{ e.phone }}</p>
+            <textarea id="general_info" placeholder="أضف ملاحظات إدارية، العنوان التفصيلي، المستوى الدراسي...">{{ e.general_info or '' }}</textarea>
+            <button class="save-btn" onclick="saveNote('general_info')">حفظ المعلومات</button>
+            <div style="clear:both"></div>
+        </div>
 
-            <div class="evolution-card">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3><i class="fas fa-chart-line"></i> المسار التطوري والملاحظات</h3>
-                    <button class="btn-add" onclick="addNewRecord()"><i class="fas fa-plus"></i> إضافة فحص/ملاحظة</button>
-                </div>
-                <hr>
-                <div id="timeline">
-                    <div class="timeline-item">
-                        <span class="timeline-date">تاريخ التحويل: {{ e.converted_at }}</span>
-                        <h4>فتح الملف الإلكتروني</h4>
-                        <p>تم تحويل المفحوص من قائمة الانتظار إلى قاعدة البيانات الدائمة.</p>
-                    </div>
-                    </div>
-            </div>
+        <div class="section">
+            <h3>📜 تاريخ الحالة (Anamnèse)</h3>
+            <textarea id="history" placeholder="ظروف الحمل، الولادة، السوابق العائلية، الأمراض السابقة...">{{ e.history or '' }}</textarea>
+            <button class="save-btn" onclick="saveNote('history')">حفظ تاريخ الحالة</button>
+            <div style="clear:both"></div>
+        </div>
+
+        <div class="section">
+            <h3>🧪 الاختبارات والمقاييس</h3>
+            <textarea id="tests" placeholder="نتائج اختبارات الذكاء، اختبارات اللغة، السلوك...">{{ e.tests or '' }}</textarea>
+            <button class="save-btn" onclick="saveNote('tests')">حفظ نتائج الاختبارات</button>
+            <div style="clear:both"></div>
+        </div>
+
+        <div class="section">
+            <h3>🩺 التكفل، التقييم والتشخيص</h3>
+            <textarea id="diagnosis" placeholder="التشخيص النهائي، نتائج التقييمات الدورية...">{{ e.diagnosis or '' }}</textarea>
+            <button class="save-btn" onclick="saveNote('diagnosis')">حفظ التشخيص</button>
+            <div style="clear:both"></div>
+        </div>
+
+        <div class="section">
+            <h3>📈 المسار التطوري والبرامج العلاجية</h3>
+            <textarea id="therapy" placeholder="البرامج المطبقة، التمارين، مدى الاستجابة للعلاج...">{{ e.therapy or '' }}</textarea>
+            <button class="save-btn" onclick="saveNote('therapy')">حفظ المسار العلاجي</button>
+            <div style="clear:both"></div>
         </div>
     </div>
 
     <script>
-        function addNewRecord() {
-            let note = prompt("أدخل ملاحظات الفحص الجديد أو نتائج التقييم:");
-            if(note) {
-                let timeline = document.getElementById('timeline');
-                let div = document.createElement('div');
-                div.className = 'timeline-item';
-                let date = new Date().toLocaleString('ar-EG');
-                div.innerHTML = `<span class="timeline-date">${date}</span><h4>تحديث إكلينيكي جديد</h4><p>${note}</p>`;
-                timeline.prepend(div);
-                // ملاحظة: سنحتاج لاحقاً لربط هذه الدالة بالسيرفر لحفظ الملاحظة بشكل دائم
-            }
+        function saveNote(type) {
+            const content = document.getElementById(type).value;
+            const e_id = "{{ e.id }}";
+
+            const fd = new FormData();
+            fd.append('id', e_id);
+            fd.append('type', type);
+            fd.append('content', content);
+
+            // تغيير نص الزر مؤقتاً للإشارة إلى الجاري حفظه
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = "جاري الحفظ...";
+            btn.disabled = true;
+
+            fetch('/save_examinee_note', { 
+                method: 'POST', 
+                body: fd 
+            })
+            .then(r => r.json())
+            .then(data => {
+                if(data.success) {
+                    alert('تم حفظ البيانات بنجاح ✅');
+                } else {
+                    alert('حدث خطأ أثناء الحفظ ❌');
+                }
+            })
+            .catch(err => alert('خطأ في الاتصال بالسيرفر'))
+            .finally(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
         }
     </script>
 </body>
