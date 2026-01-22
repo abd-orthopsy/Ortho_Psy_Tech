@@ -84,29 +84,24 @@ def login_check():
         return jsonify({"success": True, "redirect": "/dashboard"})
     # 2. قسم الأرطفونيا
     elif user == "ortho_admin" and pw == "ortho2026":
-        return jsonify({"success": True, "redirect": "/dashboard_ortho"})
+        return jsonify({"success": True, "redirect": "/ortho-tech"})
     # 3. قسم العيادي
     elif user == "psy_admin" and pw == "psy2026":
-        return jsonify({"success": True, "redirect": "/dashboard_psy"})
+        return jsonify({"success": True, "redirect": "/psy-tech"})
     # 4. قسم البحث
     elif user == "research_admin" and pw == "res2026":
-        return jsonify({"success": True, "redirect": "/dashboard_research"})
+        return jsonify({"success": True, "redirect": "/research-tech"})
         
     return jsonify({"success": False})
 
 # --- لوحة تحكم الإدارة الملكية (تستخدم dashboard.html الأصلي) ---
 @app.route('/dashboard')
 def dashboard():
-    # جلب البيانات من الملفات مباشرة لضمان عدم ضياعها
     all_bookings = get_all_bookings()
     all_examinees = get_all_examinees()
-    
-    # التأكد من إرسال البيانات بأسماء المتغيرات التي يتوقعها ملف HTML
-    return render_template('dashboard.html', 
-                           bookings=all_bookings, 
-                           examinees=all_examinees)
+    return render_template('dashboard.html', bookings=all_bookings, examinees=all_examinees)
 
-# --- لوحات تحكم الأقسام التقنية (تستخدم dept_dashboard.html حصراً) ---
+# --- لوحات تحكم الأقسام التقنية ---
 @app.route('/ortho-tech')
 def dashboard_ortho():
     tools = get_tools_by_file(ORTHO_TOOLS_FILE)
@@ -167,7 +162,7 @@ def delete_psy_tool(tool_id): return delete_tool_from_dept(PSY_TOOLS_FILE, tool_
 @app.route('/delete_research_tool/<tool_id>', methods=['POST'])
 def delete_research_tool(tool_id): return delete_tool_from_dept(RESEARCH_TOOLS_FILE, tool_id)
 
-# --- مسارات الحجوزات والمفحوصين (الأصلية كما هي) ---
+# --- مسارات الحجوزات والمفحوصين ---
 @app.route('/save_booking', methods=['POST'])
 def save_booking():
     try:
@@ -235,6 +230,36 @@ def examinee_file(examinee_id):
     if examinee:
         return render_template('examinee_profile.html', e=examinee)
     return "المفحوص غير موجود", 404
+
+# --- الإضافات الجديدة للملف الإكلينيكي والحذف ---
+
+@app.route('/delete_examinee/<examinee_id>', methods=['POST'])
+def delete_examinee(examinee_id):
+    try:
+        examinees = get_all_examinees()
+        updated = [e for e in examinees if str(e.get('id')) != str(examinee_id)]
+        with open(EXAMINEES_FILE, "w", encoding="utf-8") as f:
+            json.dump(updated, f, ensure_ascii=False, indent=4)
+        return "تم حذف الملف بنجاح"
+    except Exception as e:
+        return str(e), 500
+
+@app.route('/save_examinee_note', methods=['POST'])
+def save_examinee_note():
+    try:
+        e_id = request.form.get('id')
+        note_type = request.form.get('type')
+        content = request.form.get('content')
+        examinees = get_all_examinees()
+        for e in examinees:
+            if str(e.get('id')) == str(e_id):
+                e[note_type] = content
+                break
+        with open(EXAMINEES_FILE, "w", encoding="utf-8") as f:
+            json.dump(examinees, f, ensure_ascii=False, indent=4)
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
     
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
