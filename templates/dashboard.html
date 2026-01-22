@@ -137,7 +137,7 @@
     <div class="main-content">
         <div class="header-stats">
             <div class="stat-card"><h4>إجمالي الحجوزات</h4><p>{{ bookings|length }}</p></div>
-            <div class="stat-card"><h4>إجمالي المفحوصين</h4><p>{{ examinees|length }}</p></div>
+            <div class="stat-card" style="border-right-color: var(--success);"><h4>إجمالي المفحوصين</h4><p>{{ examinees|length }}</p></div>
         </div>
 
         <div class="control-panel">
@@ -161,6 +161,36 @@
                             <td>
                                 <button onclick="alert('تفاصيل المشكلة: \n {{ b.problem }}')" style="background:var(--accent-blue); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">عرض</button>
                                 <button onclick="convert('{{ b.id }}')" style="background:var(--success); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">تحويل</button>
+                                <button onclick="deleteItem('booking', '{{ b.id }}')" style="background:var(--danger); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">حذف</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="control-panel" style="border-top: 4px solid var(--success);">
+            <h3>👥 سجل المفحوصين (الملفات الإكلينيكية)</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>تاريخ التحويل</th>
+                            <th>اسم المفحوص</th>
+                            <th>رقم الملف</th>
+                            <th>الإجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for e in examinees %}
+                        <tr>
+                            <td>{{ e.converted_at }}</td>
+                            <td><strong>{{ e.main_name }}</strong></td>
+                            <td>#{{ e.id[-5:] }}</td>
+                            <td>
+                                <a href="/examinee_file/{{ e.id }}" style="background:var(--brand-bg); color:white; text-decoration:none; padding:6px 12px; border-radius:5px; font-size:0.9rem; display:inline-block;">📂 الملف الإكلينيكي</a>
+                                <button onclick="deleteItem('examinee', '{{ e.id }}')" style="background:var(--danger); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">حذف</button>
                             </td>
                         </tr>
                         {% endfor %}
@@ -202,6 +232,15 @@
             if(confirm('هل تريد تحويل هذا الشخص إلى قائمة المفحوصين؟')) {
                 fetch('/convert_to_examinee/' + id, { method: 'POST' })
                 .then(r => r.ok ? location.reload() : alert("خطأ في التحويل"));
+            }
+        }
+
+        // دالة الحذف الجديدة للمواعيد والمفحوصين
+        function deleteItem(type, id) {
+            if(confirm('هل أنت متأكد من الحذف النهائي؟')) {
+                let url = type === 'booking' ? '/delete_booking/' + id : '/delete_examinee/' + id;
+                fetch(url, { method: 'POST' })
+                .then(r => r.ok ? location.reload() : alert("خطأ في الحذف"));
             }
         }
     </script>
