@@ -223,6 +223,17 @@ def save_full_report():
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+@app.route('/follow_up/<examinee_id>')
+def follow_up(examinee_id):
+    try:
+        # جلب بيانات المفحوص من السحابة لعرضها في التقرير
+        examinee = examinees_col.find_one({"_id": ObjectId(examinee_id)})
+        if examinee:
+            examinee['id'] = str(examinee['_id']) # تحويل المعرف لنص
+            return render_template('follow_up_report.html', e=examinee)
+        return "المفحوص غير موجود", 404
+    except Exception as e:
+        return f"خطأ في الوصول للتقرير: {str(e)}", 400
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
