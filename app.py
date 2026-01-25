@@ -203,7 +203,26 @@ def save_examinee_note():
         examinees_col.update_one({"_id": ObjectId(e_id)}, {"$set": {note_type: content}})
         return jsonify({"success": True})
     except Exception as e: return jsonify({"success": False, "error": str(e)}), 500
-
+@app.route('/save_full_report', methods=['POST'])
+def save_full_report():
+    try:
+        data = request.json
+        e_id = data.get('id')
+        # تحديث وثيقة المفحوص بكل البيانات الجديدة للتقرير
+        examinees_col.update_one(
+            {"_id": ObjectId(e_id)},
+            {"$set": {
+                "birth_date": data.get('birth_date'),
+                "language_summary": data.get('language_summary'),
+                "health_history": data.get('health_history'),
+                "tests_results": data.get('tests_results'),
+                "goals": data.get('goals'),
+                "intervention_plan": data.get('intervention_plan')
+            }}
+        )
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
