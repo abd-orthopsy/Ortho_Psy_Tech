@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+import base64
 
 # 🛠️ تحديد المسارات المطلقة لضمان عمل Render بشكل صحيح
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -234,6 +235,30 @@ def follow_up(examinee_id):
         return "المفحوص غير موجود", 404
     except Exception as e:
         return f"خطأ في الوصول للتقرير: {str(e)}", 400
+
+@app.route('/upload_examinee_file', methods=['POST'])
+def upload_examinee_file():
+    try:
+        e_id = request.form.get('id')
+        file_type = request.form.get('type') # photo أو doc
+        file = request.files.get('file')
+        
+        if file:
+            # تحويل الملف إلى Base64
+            encoded_string = base64.b64encode(file.read()).decode('utf-8')
+            mime_type = file.content_type
+            data_uri = f"data:{mime_type};base64,{encoded_string}"
+            
+            # التخزين في MongoDB
+            if file_type == 'photo':
+                examinees_col.update_one({"_id": ObjectId(e_id)}, {"$set": {"photo": data_uri}})
+            else:
+                field = request.form.get('field') # الحقل المستهدف
+                examinees_col.update_one({"_id": ObjectId(e_id)}, {"$push": {f"{field}_docs": data_uri}})
+            
+            return jsonify({"success": True, "url": data_uri})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
