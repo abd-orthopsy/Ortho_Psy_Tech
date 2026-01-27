@@ -89,7 +89,7 @@
 
         <div style="flex: 3; min-width: 250px;">
             <p><span class="data-label">الاسم:</span> {{ e.main_name }} | <span class="data-label">الهاتف:</span> {{ e.phone }}</p>
-            <textarea id="general_info" style="width:100%; height:100px;" placeholder="أضف ملاحظات إدارية، العنوان التفصيلي، المستوى الدe.general_info or '' }}</textarea>
+            <textarea id="general_info" style="width:100%; height:100px;" placeholder="أضف ملاحظات إدارية، العنوان التفصيلي، المستوى الدراسي...">{{ e.general_info or '' }}</textarea>
             <button class="save-btn" onclick="saveNote('general_info')">حفظ المعلومات</button>
         </div>
     </div>
