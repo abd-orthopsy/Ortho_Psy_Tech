@@ -259,6 +259,15 @@ def upload_examinee_file():
             return jsonify({"success": True, "url": data_uri})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+@app.route('/delete_examinee_photo', methods=['POST'])
+def delete_examinee_photo():
+    try:
+        e_id = request.json.get('id')
+        # مسح حقل الصورة من قاعدة البيانات
+        examinees_col.update_one({"_id": ObjectId(e_id)}, {"$unset": {"photo": ""}})
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
