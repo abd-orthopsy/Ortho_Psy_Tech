@@ -132,32 +132,64 @@
 </div>
 
         <div class="section">
-            <h3>🧪 الاختبارات والمقاييس</h3>
-            <textarea id="tests" placeholder="نتائج اختبارات الذكاء، اختبارات اللغة، السلوك...">{{ e.tests or '' }}</textarea>
-            <input type="file" class="doc-input" hidden onchange="uploadDoc('{{ e.id }}', 'field_name')">
-            <button onclick="this.previousElementSibling.click()" class="btn btn-sm btn-secondary mt-1">📎 إرفاق مستند/صورة</button>
-            <button class="save-btn" onclick="saveNote('tests')">حفظ نتائج الاختبارات</button>
-            <div style="clear:both"></div>
-        </div>
-
-        <div class="section">
-            <h3>🩺 التكفل، التقييم والتشخيص</h3>
-            <textarea id="diagnosis" placeholder="التشخيص النهائي، نتائج التقييمات الدورية...">{{ e.diagnosis or '' }}</textarea>
-            <input type="file" class="doc-input" hidden onchange="uploadDoc('{{ e.id }}', 'field_name')">
-            <button onclick="this.previousElementSibling.click()" class="btn btn-sm btn-secondary mt-1">📎 إرفاق مستند/صورة</button>
-            <button class="save-btn" onclick="saveNote('diagnosis')">حفظ التشخيص</button>
-            <div style="clear:both"></div>
-        </div>
-
-        <div class="section">
-            <h3>📈 المسار التطوري والبرامج العلاجية</h3>
-            <textarea id="therapy" placeholder="البرامج المطبقة، التمارين، مدى الاستجابة للعلاج...">{{ e.therapy or '' }}</textarea>
-            <input type="file" class="doc-input" hidden onchange="uploadDoc('{{ e.id }}', 'field_name')">
-            <button onclick="this.previousElementSibling.click()" class="btn btn-sm btn-secondary mt-1">📎 إرفاق مستند/صورة</button>
-            <button class="save-btn" onclick="saveNote('therapy')">حفظ المسار العلاجي</button>
-            <div style="clear:both"></div>
-        </div>
+    <h3>📊 الاختبارات والمقاييس (Tests & Measures)</h3>
+    <textarea id="tests" placeholder="نتائج الاختبارات الرسمية، الدرجات الموزونة، التفسير الإحصائي...">{{ e.tests or '' }}</textarea>
+    
+    <div class="attachments-area" id="files_tests" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+        {% if e.tests_docs %}
+            {% for doc in e.tests_docs %}
+                <div class="file-badge">
+                    <a href="{{ doc }}" download="test_{{ loop.index }}" style="background:#f8f9fa; border:1px solid #ccc; text-decoration:none; color:#333; padding:5px 8px; border-radius:4px; font-size:0.8rem; display:inline-block;">📥 اختبار {{ loop.index }}</a>
+                </div>
+            {% endfor %}
+        {% endif %}
     </div>
+
+    <button class="save-btn" onclick="saveNote('tests')">حفظ النتائج</button>
+    <input type="file" id="input_tests" hidden accept=".pdf,.doc,.docx,image/*" onchange="uploadDoc('{{ e.id }}', 'tests')">
+    <button onclick="document.getElementById('input_tests').click()" style="background:#6c757d; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; float:left;">📎 إرفاق مستند/صورة</button>
+    <div style="clear:both"></div>
+</div>
+
+<div class="section">
+    <h3>🩺 التكفل، التقييم والتشخيص</h3>
+    <textarea id="diagnosis" placeholder="مشروع الكفالة الأرطفونية/النفسية، الأهداف العلاجية، التشخيص الفارق...">{{ e.diagnosis or '' }}</textarea>
+    
+    <div class="attachments-area" id="files_diagnosis" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+        {% if e.diagnosis_docs %}
+            {% for doc in e.diagnosis_docs %}
+                <div class="file-badge">
+                    <a href="{{ doc }}" download="diagnosis_{{ loop.index }}" style="background:#f8f9fa; border:1px solid #ccc; text-decoration:none; color:#333; padding:5px 8px; border-radius:4px; font-size:0.8rem; display:inline-block;">📥 مستند {{ loop.index }}</a>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <button class="save-btn" onclick="saveNote('diagnosis')">حفظ التشخيص</button>
+    <input type="file" id="input_diagnosis" hidden accept=".pdf,.doc,.docx,image/*" onchange="uploadDoc('{{ e.id }}', 'diagnosis')">
+    <button onclick="document.getElementById('input_diagnosis').click()" style="background:#6c757d; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; float:left;">📎 إرفاق مستند/صورة</button>
+    <div style="clear:both"></div>
+</div>
+
+<div class="section">
+    <h3>📈 المسار التطوري (Évolution)</h3>
+    <textarea id="evolution" placeholder="ملاحظات حول تقدم الحالة، التعديلات على الخطة العلاجية، مآل الحالة...">{{ e.evolution or '' }}</textarea>
+    
+    <div class="attachments-area" id="files_evolution" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+        {% if e.evolution_docs %}
+            {% for doc in e.evolution_docs %}
+                <div class="file-badge">
+                    <a href="{{ doc }}" download="evolution_{{ loop.index }}" style="background:#f8f9fa; border:1px solid #ccc; text-decoration:none; color:#333; padding:5px 8px; border-radius:4px; font-size:0.8rem; display:inline-block;">📥 مستند {{ loop.index }}</a>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <button class="save-btn" onclick="saveNote('evolution')">حفظ المسار</button>
+    <input type="file" id="input_evolution" hidden accept=".pdf,.doc,.docx,image/*" onchange="uploadDoc('{{ e.id }}', 'evolution')">
+    <button onclick="document.getElementById('input_evolution').click()" style="background:#6c757d; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; float:left;">📎 إرفاق مستند/صورة</button>
+    <div style="clear:both"></div>
+</div>
 
     <script>
         function saveNote(type) {
