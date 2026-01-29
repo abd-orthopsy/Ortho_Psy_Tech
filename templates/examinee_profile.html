@@ -10,6 +10,8 @@
             --gold: #f1c40f; 
             --bg: #f4f7f6; 
             --success: #27ae60;
+            --danger: #dc3545;
+            --brand-bg: #2c3e50;
         }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; }
         .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.1); }
@@ -64,6 +66,8 @@
         
         .data-label { font-weight: bold; color: #555; }
         .back-link { text-decoration: none; color: var(--main); font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .attachments-area { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; margin-bottom: 10px; }
+        .file-badge a { background: #f8f9fa; border: 1px solid #ccc; text-decoration: none; color: #333; padding: 5px 8px; border-radius: 4px; font-size: 0.8rem; display: inline-block; }
     </style>
 </head>
 <body>
@@ -74,150 +78,105 @@
         </div>
 
         <div class="card mb-4 shadow-sm" style="padding: 20px; border: 1px solid #ddd; border-radius: 10px; background: #fff; margin-bottom: 20px; position: relative;">
-    <h3>👤 معلومات عامة وصورة المفحوص</h3>
-    
-    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; margin-bottom: 15px;">
-        
-        <div style="text-align: center; flex: 1; min-width: 160px; position: relative;">
-            <div id="imagePreview" style="position: relative; display: inline-block;">
-                <img src="{{ e.photo or 'https://via.placeholder.com/150?text=No+Photo' }}" 
-                     id="profileImg" 
-                     style="width:140px; height:140px; border-radius:10px; border:2px solid var(--brand-bg); object-fit:cover; display: block;">
-                
-                {% if e.photo %}
-                <button onclick="deletePhoto('{{ e.id }}')" 
-                        title="حذف الصورة"
-                        style="position: absolute; top: -10px; right: -10px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;">
-                    ✕
-                </button>
-                {% endif %}
+            <h3>👤 معلومات عامة وصورة المفحوص</h3>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; margin-bottom: 15px;">
+                <div style="text-align: center; flex: 1; min-width: 160px; position: relative;">
+                    <div id="imagePreview" style="position: relative; display: inline-block;">
+                        <img src="{{ e.photo or 'https://via.placeholder.com/150?text=No+Photo' }}" id="profileImg" style="width:140px; height:140px; border-radius:10px; border:2px solid var(--main); object-fit:cover; display: block;">
+                        {% if e.photo %}
+                        <button onclick="deletePhoto('{{ e.id }}')" title="حذف الصورة" style="position: absolute; top: -10px; right: -10px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;">✕</button>
+                        {% endif %}
+                    </div>
+                    <input type="file" id="photoInput" hidden accept="image/*" onchange="uploadPhoto('{{ e.id }}')">
+                    <button class="save-btn" style="float:none; width:100%; margin-top:10px; font-size:0.8rem; background: #007bff;" onclick="document.getElementById('photoInput').click()">📸 جذب الصورة</button>
+                </div>
+                <div style="flex: 3; min-width: 250px;">
+                    <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                        <p style="margin: 0;"><span class="data-label">الاسم:</span> {{ e.main_name }}</p>
+                        <p style="margin: 5px 0 0 0;"><span class="data-label">الهاتف:</span> {{ e.phone }}</p>
+                    </div>
+                    <textarea id="general_info" placeholder="أضف ملاحظات إدارية، العنوان التفصيلي، المستوى الدراسي...">{{ e.general_info or '' }}</textarea>
+                    <button class="save-btn" onclick="saveNote('general_info')">حفظ المعلومات الإدارية</button>
+                </div>
             </div>
-
-            <input type="file" id="photoInput" hidden accept="image/*" onchange="uploadPhoto('{{ e.id }}')">
-            <button class="save-btn" 
-                    style="float:none; width:100%; margin-top:10px; font-size:0.8rem; background: #007bff; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer;" 
-                    onclick="document.getElementById('photoInput').click()">
-                📸 جذب الصورة
-            </button>
+            <div style="clear:both"></div>
         </div>
-
-        <div style="flex: 3; min-width: 250px;">
-            <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
-                <p style="margin: 0;"><span class="data-label" style="font-weight: bold; color: #333;">الاسم:</span> {{ e.main_name }}</p>
-                <p style="margin: 5px 0 0 0;"><span class="data-label" style="font-weight: bold; color: #333;">الهاتف:</span> {{ e.phone }}</p>
-            </div>
-            
-            <textarea id="general_info" 
-                      style="width:100%; height:100px; padding:10px; border:1px solid #ccc; border-radius:5px; resize: vertical;" 
-                      placeholder="أضف ملاحظات إدارية، العنوان التفصيلي، المستوى الدراسي...">{{ e.general_info or '' }}</textarea>
-            
-            <button class="save-btn" 
-                    onclick="saveNote('general_info')" 
-                    style="margin-top:10px; background: var(--brand-bg); color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
-                حفظ المعلومات الإدارية
-            </button>
-        </div>
-    </div>
-    <div style="clear:both"></div>
-</div>
-    </div>
-    <div style="clear:both"></div>
-</div>
-
-<div class="section">
-    <h3>📜 تاريخ الحالة (Anamnèse)</h3>
-    <textarea id="history" placeholder="ظروف الحمل، الولادة، السوابق العائلية، الأمراض السابقة...">{{ e.history or '' }}</textarea>
-    <button class="save-btn" onclick="saveNote('history')">حفظ تاريخ الحالة</button>
-    <div style="clear:both"></div>
-</div>
 
         <div class="section">
-    <h3>📊 الاختبارات والمقاييس (Tests & Measures)</h3>
-    <textarea id="tests" placeholder="نتائج الاختبارات الرسمية، الدرجات الموزونة، التفسير الإحصائي...">{{ e.tests or '' }}</textarea>
-    
-    <div class="attachments-area" id="files_tests" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
-        {% if e.tests_docs %}
-            {% for doc in e.tests_docs %}
-                <div class="file-badge">
-                    <a href="{{ doc }}" download="test_{{ loop.index }}" style="background:#f8f9fa; border:1px solid #ccc; text-decoration:none; color:#333; padding:5px 8px; border-radius:4px; font-size:0.8rem; display:inline-block;">📥 اختبار {{ loop.index }}</a>
-                </div>
-            {% endfor %}
-        {% endif %}
+            <h3>📜 تاريخ الحالة (Anamnèse)</h3>
+            <textarea id="history" placeholder="ظروف الحمل، الولادة، السوابق العائلية، الأمراض السابقة...">{{ e.history or '' }}</textarea>
+            <button class="save-btn" onclick="saveNote('history')">حفظ تاريخ الحالة</button>
+            <div style="clear:both"></div>
+        </div>
+
+        <div class="section">
+            <h3>📊 الاختبارات والمقاييس (Tests & Measures)</h3>
+            <textarea id="tests" placeholder="نتائج الاختبارات الرسمية، الدرجات الموزونة، التفسير الإحصائي...">{{ e.tests or '' }}</textarea>
+            <div class="attachments-area" id="files_tests">
+                {% if e.tests_docs %}
+                    {% for doc in e.tests_docs %}
+                        <div class="file-badge"><a href="{{ doc }}" download="test_{{ loop.index }}">📥 اختبار {{ loop.index }}</a></div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <button class="save-btn" onclick="saveNote('tests')">حفظ النتائج</button>
+            <input type="file" id="input_tests" hidden accept=".pdf,.doc,.docx,image/*" onchange="uploadDoc('{{ e.id }}', 'tests')">
+            <button onclick="document.getElementById('input_tests').click()" style="background:#6c757d; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; float:left;">📎 إرفاق مستند/صورة</button>
+            <div style="clear:both"></div>
+        </div>
+
+        <div class="section">
+            <h3>🩺 التكفل، التقييم والتشخيص</h3>
+            <textarea id="diagnosis" placeholder="مشروع الكفالة الأرطفونية/النفسية، الأهداف العلاجية، التشخيص الفارق...">{{ e.diagnosis or '' }}</textarea>
+            <div class="attachments-area" id="files_diagnosis">
+                {% if e.diagnosis_docs %}
+                    {% for doc in e.diagnosis_docs %}
+                        <div class="file-badge"><a href="{{ doc }}" download="diagnosis_{{ loop.index }}">📥 مستند {{ loop.index }}</a></div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <button class="save-btn" onclick="saveNote('diagnosis')">حفظ التشخيص</button>
+            <input type="file" id="input_diagnosis" hidden accept=".pdf,.doc,.docx,image/*" onchange="uploadDoc('{{ e.id }}', 'diagnosis')">
+            <button onclick="document.getElementById('input_diagnosis').click()" style="background:#6c757d; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; float:left;">📎 إرفاق مستند/صورة</button>
+            <div style="clear:both"></div>
+        </div>
+
+        <div class="section">
+            <h3>📈 المسار التطوري (Évolution)</h3>
+            <textarea id="evolution" placeholder="ملاحظات حول تقدم الحالة، التعديلات على الخطة العلاجية، مآل الحالة...">{{ e.evolution or '' }}</textarea>
+            <div class="attachments-area" id="files_evolution">
+                {% if e.evolution_docs %}
+                    {% for doc in e.evolution_docs %}
+                        <div class="file-badge"><a href="{{ doc }}" download="evolution_{{ loop.index }}">📥 مستند {{ loop.index }}</a></div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <button class="save-btn" onclick="saveNote('evolution')">حفظ المسار</button>
+            <input type="file" id="input_evolution" hidden accept=".pdf,.doc,.docx,image/*" onchange="uploadDoc('{{ e.id }}', 'evolution')">
+            <button onclick="document.getElementById('input_evolution').click()" style="background:#6c757d; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; float:left;">📎 إرفاق مستند/صورة</button>
+            <div style="clear:both"></div>
+        </div>
     </div>
-
-    <button class="save-btn" onclick="saveNote('tests')">حفظ النتائج</button>
-    <input type="file" id="input_tests" hidden accept=".pdf,.doc,.docx,image/*" onchange="uploadDoc('{{ e.id }}', 'tests')">
-    <button onclick="document.getElementById('input_tests').click()" style="background:#6c757d; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; float:left;">📎 إرفاق مستند/صورة</button>
-    <div style="clear:both"></div>
-</div>
-
-<div class="section">
-    <h3>🩺 التكفل، التقييم والتشخيص</h3>
-    <textarea id="diagnosis" placeholder="مشروع الكفالة الأرطفونية/النفسية، الأهداف العلاجية، التشخيص الفارق...">{{ e.diagnosis or '' }}</textarea>
-    
-    <div class="attachments-area" id="files_diagnosis" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
-        {% if e.diagnosis_docs %}
-            {% for doc in e.diagnosis_docs %}
-                <div class="file-badge">
-                    <a href="{{ doc }}" download="diagnosis_{{ loop.index }}" style="background:#f8f9fa; border:1px solid #ccc; text-decoration:none; color:#333; padding:5px 8px; border-radius:4px; font-size:0.8rem; display:inline-block;">📥 مستند {{ loop.index }}</a>
-                </div>
-            {% endfor %}
-        {% endif %}
-    </div>
-
-    <button class="save-btn" onclick="saveNote('diagnosis')">حفظ التشخيص</button>
-    <input type="file" id="input_diagnosis" hidden accept=".pdf,.doc,.docx,image/*" onchange="uploadDoc('{{ e.id }}', 'diagnosis')">
-    <button onclick="document.getElementById('input_diagnosis').click()" style="background:#6c757d; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; float:left;">📎 إرفاق مستند/صورة</button>
-    <div style="clear:both"></div>
-</div>
-
-<div class="section">
-    <h3>📈 المسار التطوري (Évolution)</h3>
-    <textarea id="evolution" placeholder="ملاحظات حول تقدم الحالة، التعديلات على الخطة العلاجية، مآل الحالة...">{{ e.evolution or '' }}</textarea>
-    
-    <div class="attachments-area" id="files_evolution" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
-        {% if e.evolution_docs %}
-            {% for doc in e.evolution_docs %}
-                <div class="file-badge">
-                    <a href="{{ doc }}" download="evolution_{{ loop.index }}" style="background:#f8f9fa; border:1px solid #ccc; text-decoration:none; color:#333; padding:5px 8px; border-radius:4px; font-size:0.8rem; display:inline-block;">📥 مستند {{ loop.index }}</a>
-                </div>
-            {% endfor %}
-        {% endif %}
-    </div>
-
-    <button class="save-btn" onclick="saveNote('evolution')">حفظ المسار</button>
-    <input type="file" id="input_evolution" hidden accept=".pdf,.doc,.docx,image/*" onchange="uploadDoc('{{ e.id }}', 'evolution')">
-    <button onclick="document.getElementById('input_evolution').click()" style="background:#6c757d; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; float:left;">📎 إرفاق مستند/صورة</button>
-    <div style="clear:both"></div>
-</div>
 
     <script>
         function saveNote(type) {
             const content = document.getElementById(type).value;
             const e_id = "{{ e.id }}";
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = "جاري الحفظ...";
+            btn.disabled = true;
 
             const fd = new FormData();
             fd.append('id', e_id);
             fd.append('type', type);
             fd.append('content', content);
 
-            // تغيير نص الزر مؤقتاً للإشارة إلى الجاري حفظه
-            const btn = event.target;
-            const originalText = btn.innerText;
-            btn.innerText = "جاري الحفظ...";
-            btn.disabled = true;
-
-            fetch('/save_examinee_note', { 
-                method: 'POST', 
-                body: fd 
-            })
+            fetch('/save_examinee_note', { method: 'POST', body: fd })
             .then(r => r.json())
             .then(data => {
-                if(data.success) {
-                    alert('تم حفظ البيانات بنجاح ✅');
-                } else {
-                    alert('حدث خطأ أثناء الحفظ ❌');
-                }
+                if(data.success) alert('تم حفظ البيانات بنجاح ✅');
+                else alert('حدث خطأ أثناء الحفظ ❌');
             })
             .catch(err => alert('خطأ في الاتصال بالسيرفر'))
             .finally(() => {
@@ -228,36 +187,58 @@
 
         function uploadPhoto(id) {
             let file = document.getElementById('photoInput').files[0];
+            if(!file) return;
             let formData = new FormData();
             formData.append('file', file);
             formData.append('id', id);
             formData.append('type', 'photo');
 
             fetch('/upload_examinee_file', { method: 'POST', body: formData })
-           .then(res => res.json())
-           .then(data => {
-               if(data.success) {
-                   document.getElementById('profileImg').src = data.url;
-                   alert("تم حفظ الصورة في السحابة بنجاح!");
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    document.getElementById('profileImg').src = data.url;
+                    alert("تم حفظ الصورة بنجاح!");
+                    location.reload();
+                }
+            });
         }
-    });
-    }
-    function deletePhoto(id) {
-    if(!confirm("هل أنت متأكد من حذف صورة المفحوص؟")) return;
 
-    fetch('/delete_examinee_photo', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({id: id})
-    })
-    .then(res => res.json())
-    .then(data => {
-        if(data.success) {
-            document.getElementById('profileImg').src = 'https://via.placeholder.com/150?text=No+Photo';
-            location.reload(); // لإعادة تحديث الواجهة وإخفاء زر الحذف
+        function uploadDoc(id, field) {
+            let fileInput = document.getElementById('input_' + field);
+            let file = fileInput.files[0];
+            if (!file) return;
+
+            let formData = new FormData();
+            formData.append('file', file);
+            formData.append('id', id);
+            formData.append('type', 'doc');
+            formData.append('field', field);
+
+            fetch('/upload_examinee_file', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    alert("تم إرفاق المستند بنجاح ✅");
+                    location.reload();
+                } else {
+                    alert("خطأ في الرفع: " + data.error);
+                }
+            });
         }
-    });
-    }
+
+        function deletePhoto(id) {
+            if(!confirm("هل أنت متأكد من حذف صورة المفحوص؟")) return;
+            fetch('/delete_examinee_photo', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({id: id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) location.reload();
+            });
+        }
     </script>
 </body>
 </html>
