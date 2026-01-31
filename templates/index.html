@@ -118,6 +118,60 @@
             margin-bottom: 25px !important;
             font-size: 0.95rem !important;
         }
+    /* تنسيق حاوية الأزرار لتكون في المنتصف */
+        .auth-buttons-container {
+            margin-top: 25px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out;
+        }
+
+/* التصميم الأساسي للأزرار */
+        .main-btn {
+            text-decoration: none;
+            padding: 12px 30px;
+            border-radius: 50px; /* حواف دائرية بالكامل */
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: inline-block;
+        }
+
+/* زر الدخول (داكن) */
+        .login-btn {
+            background-color: #2c3e50;
+            color: white;
+            border: 2px solid #2c3e50;
+        }
+
+        .login-btn:hover {
+            background-color: #34495e;
+            transform: translateY(-3px); /* يرتفع قليلاً للأعلى */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+/* زر التسجيل (أبيض بحدود ذهبية) */
+        .register-btn {
+            background-color: white;
+            color: #2c3e50;
+            border: 2px solid #f1c40f;
+        }
+
+        .register-btn:hover {
+            background-color: #f1c40f; /* يصبح ذهبياً */
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(241, 196, 15, 0.3);
+        }
+
+/* حركة ظهور ناعمة */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -132,6 +186,17 @@
     <div class="promo-zone">
         <h2>نحو رقمنة شاملة للممارسة العيادية الأرطفونية</h2>
         <p>حلول رقمية ذكية للمفحوصين، وللمختصين والباحثين</p>
+    <div class="auth-buttons-container" style="margin-top: 25px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+    
+    <a href="/login" class="main-btn login-btn">
+        🔐 دخول العيادة
+    </a>
+
+    <a href="/register" class="main-btn register-btn">
+        🚀 إنشاء حساب جديد
+    </a>
+
+    </div>
     </div>
 
     <div id="mySidebar" class="sidebar">
