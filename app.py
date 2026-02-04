@@ -4,7 +4,22 @@ from datetime import datetime
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 import base64
+from werkzeug.utils import secure_filename
 
+# --- إعدادات رفع الملفات ---
+UPLOAD_FOLDER = 'static/uploads'  # المكان الذي ستحفظ فيه الفيديوهات والصور
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'mov', 'webm'} # السماح بالفيديو
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# تحديد الحد الأقصى للحجم بـ 20 ميغا
+app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024 
+
+# دالة للتأكد من وجود مجلد الرفع، وإنشائه إن لم يكن موجوداً
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 # 🛠️ تحديد المسارات المطلقة لضمان عمل Render بشكل صحيح
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
@@ -268,6 +283,49 @@ def delete_examinee_photo():
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
-if __name__ == '__main__':
+@app.route('/add_slide', methods=['POST'])
+def add_slide():
+    # 1. التحقق من وجود الملف في الطلب
+    if 'media_file' not in request.files:
+        return 'لا يوجد ملف مرفق', 400
+    
+    file = request.files['media_file']
+    content = request.form.get('content')  # النص القادم من المحرر
+
+    # 2. التحقق من اسم الملف وامتداده
+    if file.filename == '':
+        return 'لم يتم اختيار ملف', 400
+
+    if file and allowed_file(file.filename):
+        # تأمين اسم الملف (حماية أمنية ضرورية)
+        filename = secure_filename(file.filename)
+        
+        # 3. حفظ الملف فعلياً في مجلد static/uploads
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        
+        # إنشاء المسار الذي سيخزن في قاعدة البيانات
+        # هذا المسار هو الذي سيستخدمه ملف index.html لعرض الفيديو/الصورة
+        db_file_path = f"static/uploads/{filename}"
+
+        # ---------------------------------------------------------
+        # 4. منطقة الحفظ في قاعدة البيانات (عدل هذا الجزء حسب الكود تبعك)
+        # ---------------------------------------------------------
+        # مثال إذا كنت تستخدم PyMongo:
+        # slides_collection.insert_one({
+        #     "image": db_file_path,  # مسار الفيديو أو الصورة
+        #     "text": content,        # النص المنسق
+        #     "date": datetime.now()
+        # })
+        
+        # مثال إذا كنت تستخدم SQLAlchemy:
+        # new_slide = Slide(image=db_file_path, text=content)
+        # db.session.add(new_slide)
+        # db.session.commit()
+        # ---------------------------------------------------------
+
+        return 'تم الحفظ بنجاح', 200
+    else:
+        return 'نوع الملف غير مسموح', 400
+        if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
