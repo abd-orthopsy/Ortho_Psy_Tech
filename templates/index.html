@@ -42,15 +42,10 @@
         }
         .menu-icon { font-size: 24px; color: var(--gold); }
 
-        /* تم التعديل لضمان ظهور الأزرار بشكل سليم */
         .promo-zone {
             background: var(--text-zone-bg);
-            padding: 15px 0; text-align: center;
+            padding: 10px 0; text-align: center;
             border-bottom: 1px solid #ddd;
-            height: auto !important; /* مهم جداً لظهور الأزرار */
-            min-height: 180px;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            position: relative; z-index: 100;
         }
         .promo-zone h2 { color: var(--brand-bg); font-size: 1.2rem; margin: 0; }
         .promo-zone p { color: var(--accent-blue); font-size: 1.05rem; font-weight: 800; margin-top: 3px; }
@@ -68,37 +63,23 @@
         }
         @keyframes swim { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(12px); } }
 
-        /* منطقة السلايدر */
+        /* تعديل منطقة السلايدر لتستوعب الصور المتحركة */
         .hero-slider { flex-grow: 1; background: var(--slider-bg); display: flex; align-items: center; justify-content: center; padding: 20px; }
         
-        .swiper { width: 100%; max-width: 800px; height: 100%; max-height: 500px; border-radius: 20px; }
-        
-        /* تحسين مظهر الشريحة لتقبل الفيديو والصور بمرونة */
+        .swiper { width: 100%; max-width: 800px; height: auto; border-radius: 20px; }
         .swiper-slide { 
             background: white; 
-            padding: 0; /* إزالة الحواف الداخلية لتملأ الصورة/الفيديو المكان */
+            padding: 30px; 
             border-radius: 20px; 
             box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
             border: 2px solid var(--gold);
             text-align: center;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            overflow: hidden; /* لقص الزوائد */
-        }
-
-        /* تنسيق المحتوى النصي داخل الشريحة */
-        .slide-content-text {
-            padding: 30px;
-            width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center;
+            min-height: 250px;
         }
-
-        /* لضمان تناسق الصور والفيديوهات */
-        .swiper-slide img, .swiper-slide video { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; /* يجعل الفيديو يملأ الإطار بالكامل */
-            border-radius: 18px; 
-        }
+        /* لضمان تناسق الصور والفيديوهات القادمة من المحرر */
+        .swiper-slide img { max-width: 100%; height: auto; border-radius: 10px; margin-top: 10px; }
+        .swiper-slide video { max-width: 100%; border-radius: 10px; }
 
         .footer-wrapper { flex-shrink: 0; background: var(--footer-dark); width: 100%; padding-bottom: 25px; border-top: 4px solid var(--gold); }
         .contact-info { padding: 15px 0; display: flex; flex-direction: column; align-items: center; gap: 5px; color: #ecf0f1; font-size: 1rem; }
@@ -137,24 +118,21 @@
             margin-bottom: 25px !important;
             font-size: 0.95rem !important;
         }
-
-        /* تنسيق حاوية الأزرار */
+    /* تنسيق حاوية الأزرار لتكون في المنتصف */
         .auth-buttons-container {
-            margin-top: 20px;
+            margin-top: 25px;
             display: flex;
             gap: 15px;
             justify-content: center;
             flex-wrap: wrap;
             animation: fadeInUp 1s ease-out;
-            z-index: 101;
-            position: relative;
         }
 
-        /* التصميم الأساسي للأزرار */
+/* التصميم الأساسي للأزرار */
         .main-btn {
             text-decoration: none;
             padding: 12px 30px;
-            border-radius: 50px;
+            border-radius: 50px; /* حواف دائرية بالكامل */
             font-weight: bold;
             font-size: 1rem;
             transition: all 0.3s ease;
@@ -162,7 +140,7 @@
             display: inline-block;
         }
 
-        /* زر الدخول */
+/* زر الدخول (داكن) */
         .login-btn {
             background-color: #2c3e50;
             color: white;
@@ -171,11 +149,11 @@
 
         .login-btn:hover {
             background-color: #34495e;
-            transform: translateY(-3px);
+            transform: translateY(-3px); /* يرتفع قليلاً للأعلى */
             box-shadow: 0 6px 12px rgba(0,0,0,0.2);
         }
 
-        /* زر التسجيل */
+/* زر التسجيل (أبيض بحدود ذهبية) */
         .register-btn {
             background-color: white;
             color: #2c3e50;
@@ -183,12 +161,13 @@
         }
 
         .register-btn:hover {
-            background-color: #f1c40f;
+            background-color: #f1c40f; /* يصبح ذهبياً */
             color: white;
             transform: translateY(-3px);
             box-shadow: 0 6px 12px rgba(241, 196, 15, 0.3);
         }
 
+/* حركة ظهور ناعمة */
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -207,15 +186,17 @@
     <div class="promo-zone">
         <h2>نحو رقمنة شاملة للممارسة العيادية الأرطفونية</h2>
         <p>حلول رقمية ذكية للمفحوصين، وللمختصين والباحثين</p>
-        
-        <div class="auth-buttons-container">
-            <a href="/login" class="main-btn login-btn">
-                🔐 دخول العيادة
-            </a>
-            <a href="/register" class="main-btn register-btn">
-                🚀 إنشاء حساب جديد
-            </a>
-        </div>
+    <div class="auth-buttons-container" style="margin-top: 25px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+    
+    <a href="/login" class="main-btn login-btn">
+        🔐 دخول العيادة
+    </a>
+
+    <a href="/register" class="main-btn register-btn">
+        🚀 إنشاء حساب جديد
+    </a>
+
+    </div>
     </div>
 
     <div id="mySidebar" class="sidebar">
@@ -229,7 +210,7 @@
             <span style="color:var(--gold)">ZONE</span>
         </div>
 
-        <a href="/login" class="admin-quick-link"> دخول الإدارة</a>
+        <a href="{{ url_for('login') }}" class="admin-quick-link"> دخول الإدارة</a>
 
         <a href="/ortho-tech" class="link-ortho">Ortho Tech</a>
         <a href="/psy-tech" class="link-psy">Psy Tech</a>
@@ -248,26 +229,32 @@
                 <div class="swiper-wrapper">
                     
                     <div class="swiper-slide">
-                        <div class="slide-content-text">
-                            <div style="font-size: 1.2rem; line-height: 1.6; color: var(--brand-bg);">
-                                {{ offer_text | safe }}
-                            </div>
-                            <p style="margin-top: 20px; color: #7f8c8d; font-weight: bold; border-top: 1px dashed #ddd; padding-top: 10px;"> أحدث نشاطات العيادة</p>
+                        <div style="font-size: 1.2rem; line-height: 1.6; color: var(--brand-bg);">
+                            {{ offer_text | safe }}
                         </div>
+                        <p style="margin-top: 20px; color: #7f8c8d; font-weight: bold; border-top: 1px dashed #ddd; padding-top: 10px;"> أحدث نشاطات العيادة</p>
                     </div>
 
                     {% if slides %}
                         {% for slide in slides %}
-                        <div class="swiper-slide">
-                            {% if slide.image.endswith('.mp4') or slide.image.endswith('.webm') or 'dropbox' in slide.image %}
-                                <video autoplay muted loop playsinline>
-                                    <source src="{{ slide.image }}" type="video/mp4">
-                                    المتصفح لا يدعم الفيديو.
+                        <div class="swiper-slide" style="padding: 0; overflow: hidden; position: relative; background: #000; display: flex; align-items: center; justify-content: center;">
+                            
+                            {% if slide.image.lower().endswith(('.mp4', '.mov', '.webm')) %}
+                                <video class="slider-video" controls playsinline style="width: 100%; height: 100%; object-fit: contain;">
+                                    <source src="{{ slide.image }}">
+                                    متصفحك لا يدعم الفيديو.
                                 </video>
-                                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.1); pointer-events: none;"></div>
+                            
                             {% else %}
-                                <img src="{{ slide.image }}" alt="Slide Image">
+                                <img src="{{ slide.image }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 0;">
+                                
+                                {% if slide.text %}
+                                <div style="position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.6); color: white; padding: 15px; text-align: center;">
+                                    {{ slide.text | safe }}
+                                </div>
+                                {% endif %}
                             {% endif %}
+
                         </div>
                         {% endfor %}
                     {% endif %}
@@ -300,6 +287,25 @@
             navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
         });
 
+        // --- كود إضافي ذكي للتحكم في الفيديو ---
+        // الهدف: إيقاف السلايدر عند تشغيل الفيديو لكي لا يقفز للشريحة التالية
+        const videos = document.querySelectorAll('.slider-video');
+        videos.forEach(video => {
+            // عند الضغط على play، يتوقف تقليب الشرائح
+            video.addEventListener('play', () => {
+                swiper.autoplay.stop();
+            });
+            // عند التوقف أو الانتهاء، يعود التقليب للعمل
+            video.addEventListener('pause', () => {
+                swiper.autoplay.start();
+            });
+            video.addEventListener('ended', () => {
+                swiper.autoplay.start();
+                swiper.slideNext(); // انتقل للتالي فوراً
+            });
+        });
+        // --- نهاية كود الفيديو ---
+
         function openNav() {
             document.getElementById("mySidebar").style.width = "180px";
             document.getElementById("main-content").style.opacity = "0.3";
@@ -312,4 +318,4 @@
         document.getElementById("main-content").onclick = function() { closeNav(); }
     </script>
 </body>
-                    </html>
+</html>
