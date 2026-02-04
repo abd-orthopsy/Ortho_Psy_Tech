@@ -226,13 +226,13 @@
             document.querySelector('.sidebar-overlay').classList.toggle('active');
         }
 
-        // --- 2. إعداد المحرر (Quill) ---
+        // --- 2. إعداد المحرر ---
         var quill = new Quill('#editor-container', {
             theme: 'snow',
             modules: { toolbar: [['bold', 'italic', 'underline'], [{ 'color': [] }], [{ 'align': [] }], [{ 'direction': 'rtl' }]] }
         });
 
-        // --- 3. دالة رفع العروض (فيديو/صورة) ---
+        // --- 3. دالة الرفع ---
         function uploadSlide() {
             let fileInput = document.getElementById('mediaFile');
             let file = fileInput.files[0];
@@ -242,8 +242,7 @@
                 return;
             }
 
-            // التحقق من الحجم (20 ميغا)
-            if (file.size > 20 * 1024 * 1024) {
+            if (file.size > 20 * 1024 * 1024) { // 20 ميغا
                 alert("⚠️ حجم الملف كبير جداً! يجب أن يكون أقل من 20 ميغا.");
                 return;
             }
@@ -276,6 +275,7 @@
         }
 
         // --- 4. دوال الإدارة (الحذف والتحويل) ---
+        // ملاحظة: هذه الدوال الآن داخل السكربت ولن تظهر كنص
         
         function convert(id) { 
             if(confirm('هل تريد تحويل هذا الشخص إلى قائمة المفحوصين؟')) { 
@@ -291,6 +291,6 @@
                 .then(r => r.ok ? location.reload() : alert("خطأ في الحذف")); 
             } 
         }
-    </script>
-</body>
+
+    </script> </body>
 </html>
