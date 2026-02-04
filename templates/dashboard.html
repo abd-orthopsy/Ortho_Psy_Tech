@@ -233,7 +233,7 @@
             modules: { toolbar: [['bold', 'italic', 'underline'], [{ 'color': [] }], [{ 'align': [] }], [{ 'direction': 'rtl' }]] }
         });
 
-        // --- 3. دالة الرفع ---
+        // --- 3. دالة رفع العروض (فيديو وصور) ---
         function uploadSlide() {
             let fileInput = document.getElementById('mediaFile');
             let file = fileInput.files[0];
@@ -276,7 +276,7 @@
         }
 
         // --- 4. دوال الإدارة (الحذف والتحويل) ---
-     <script>  
+        // ✅ تم وضعها هنا داخل السكربت لتختفي من الشاشة وتعمل بشكل صحيح
         function convert(id) { 
             if(confirm('هل تريد تحويل هذا الشخص إلى قائمة المفحوصين؟')) { 
                 fetch('/convert_to_examinee/' + id, { method: 'POST' }) 
