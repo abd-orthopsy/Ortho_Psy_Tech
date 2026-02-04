@@ -217,42 +217,42 @@
                 رفع ونشر العرض (فيديو/صورة + نص) 🚀
             </button>
         </div>
-        </div> <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+        </div> 
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     
     <script>
+        // --- 1. وظائف القائمة الجانبية ---
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
             document.querySelector('.sidebar-overlay').classList.toggle('active');
         }
 
-        // إعداد المحرر (كما هو)
+        // --- 2. إعداد المحرر (Quill) ---
         var quill = new Quill('#editor-container', {
             theme: 'snow',
             modules: { toolbar: [['bold', 'italic', 'underline'], [{ 'color': [] }], [{ 'align': [] }], [{ 'direction': 'rtl' }]] }
         });
 
-        // --- دالة الرفع الجديدة (تدعم الفيديو والصور) ---
+        // --- 3. دالة رفع العروض (فيديو/صورة) ---
         function uploadSlide() {
             let fileInput = document.getElementById('mediaFile');
             let file = fileInput.files[0];
             
-            // التحقق من اختيار ملف
             if (!file) {
                 alert("⚠️ المرجو اختيار ملف فيديو أو صورة أولاً!");
                 return;
             }
 
-            // التحقق من الحجم (20 ميغا = 20 * 1024 * 1024 بايت)
+            // التحقق من الحجم (20 ميغا)
             if (file.size > 20 * 1024 * 1024) {
                 alert("⚠️ حجم الملف كبير جداً! يجب أن يكون أقل من 20 ميغا.");
                 return;
             }
 
             let fd = new FormData();
-            fd.append('media_file', file); // الملف
-            fd.append('content', quill.root.innerHTML); // النص من المحرر
+            fd.append('media_file', file);
+            fd.append('content', quill.root.innerHTML);
 
-            // إرسال البيانات إلى السيرفر (تأكد أن المسار في app.py هو /add_slide)
             let btn = document.querySelector('.update-btn');
             btn.textContent = "جاري الرفع... ⏳";
             btn.disabled = true;
@@ -261,7 +261,7 @@
             .then(response => {
                 if (response.ok) {
                     alert("تم نشر العرض بنجاح! ✅");
-                    window.location.reload(); // تحديث الصفحة لرؤية النتيجة
+                    window.location.reload();
                 } else {
                     alert("حدث خطأ أثناء الرفع ❌");
                     btn.textContent = "رفع ونشر العرض 🚀";
@@ -269,6 +269,33 @@
                 }
             })
             .catch(err => {
+                console.error(err);
+                alert("فشل الاتصال بالسيرفر");
+                btn.textContent = "رفع ونشر العرض 🚀";
+                btn.disabled = false;
+            });
+        }
+
+        // --- 4. دوال الإدارة (التي كانت تظهر كنص خطأً) ---
+        // تم وضعها الآن داخل وسم script لتعمل بشكل صحيح
+        
+        function convert(id) { 
+            if(confirm('هل تريد تحويل هذا الشخص إلى قائمة المفحوصين؟')) { 
+                fetch('/convert_to_examinee/' + id, { method: 'POST' }) 
+                .then(r => r.ok ? location.reload() : alert("خطأ في التحويل")); 
+            } 
+        } 
+
+        function deleteItem(type, id) { 
+            if(confirm('هل أنت متأكد من الحذف النهائي؟')) { 
+                let url = type === 'booking' ? '/delete_booking/' + id : '/delete_examinee/' + id; 
+                fetch(url, { method: 'POST' }) 
+                .then(r => r.ok ? location.reload() : alert("خطأ في الحذف")); 
+            } 
+        }
+    </script>
+</body>
+</html>
                 console.error(err);
                 alert("فشل الاتصال بالسيرفر");
                 btn.textContent = "رفع ونشر العرض 🚀";
