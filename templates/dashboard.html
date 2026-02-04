@@ -268,4 +268,30 @@
                 }
             })
             .catch(err => {
-                console.
+                console.error(err);
+                alert("فشل الاتصال بالسيرفر");
+                btn.textContent = "رفع ونشر العرض 🚀";
+                btn.disabled = false;
+            });
+        }
+
+        // --- 4. دوال الإدارة (الحذف والتحويل) ---
+        
+        function convert(id) { 
+            if(confirm('هل تريد تحويل هذا الشخص إلى قائمة المفحوصين؟')) { 
+                fetch('/convert_to_examinee/' + id, { method: 'POST' }) 
+                .then(r => r.ok ? location.reload() : alert("خطأ في التحويل")); 
+            } 
+        } 
+
+        function deleteItem(type, id) { 
+            if(confirm('هل أنت متأكد من الحذف النهائي؟')) { 
+                let url = type === 'booking' ? '/delete_booking/' + id : '/delete_examinee/' + id; 
+                fetch(url, { method: 'POST' }) 
+                .then(r => r.ok ? location.reload() : alert("خطأ في الحذف")); 
+            } 
+        }
+
+    </script>
+</body>
+</html>
