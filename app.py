@@ -10,8 +10,14 @@ from werkzeug.utils import secure_filename
 UPLOAD_FOLDER = 'static/uploads'  # المكان الذي ستحفظ فيه الفيديوهات والصور
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'mov', 'webm'} # السماح بالفيديو
 
+# 🛠️ تحديد المسارات المطلقة لضمان عمل Render بشكل صحيح
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
+
+app = Flask(__name__, template_folder=TEMPLATE_DIR)
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-# تحديد الحد الأقصى للحجم بـ 20 ميغا
+# تحديد الحد الأقصى للحجم بـ 20 ميغا (تم توحيد الحجم ليكون 20 بدلاً من 16 لتجنب التضارب)
 app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024 
 
 # دالة للتأكد من وجود مجلد الرفع، وإنشائه إن لم يكن موجوداً
@@ -20,36 +26,29 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-# 🛠️ تحديد المسارات المطلقة لضمان عمل Render بشكل صحيح
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 
-app = Flask(__name__, template_folder=TEMPLATE_DIR)
-
-# ✅ رفع سقف حجم البيانات المسموح بها إلى 16 ميجابايت
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-
-# 🔗 الربط بسحابة MongoDB (الرابط الخاص بك)
+# 🔗 الربط بسحابة MongoDB
 MONGO_URI = "mongodb+srv://abdmohamed_db_user:F6S0BtOD5tLkBUop@cluster0.jgimopg.mongodb.net/?retryWrites=true&w=majority"
 client = MongoClient(MONGO_URI)
 db = client['ortho_psy_db']
 
-# مجموعات البيانات (Collections) بدلاً من الملفات المحلية
+# مجموعات البيانات (Collections)
 bookings_col = db['bookings']
 examinees_col = db['examinees']
 settings_col = db['settings']
-# مجموعات الأدوات حسب الأقسام (للحفاظ على منطقك القديم)
+slides_col = db['slides']  # ✅ تمت إضافة هذه المجموعة ليعمل السلايدر
+
+# مجموعات الأدوات حسب الأقسام
 ortho_tools_col = db['ortho_tools']
 psy_tools_col = db['psy_tools']
 research_tools_col = db['research_tools']
 
-# --- دالات جلب البيانات الأساسية (معدلة للسحاب) ---
+# --- دالات جلب البيانات الأساسية ---
 def get_current_offer():
     offer = settings_col.find_one({"type": "offer"})
     return offer['content'] if offer else "أهلاً بكم في Ortho_Psy Tech"
 
 def get_all_bookings():
-    # جلب المواعيد وتحويل معرفات MongoDB إلى نصوص لسهولة التعامل في HTML
     data = list(bookings_col.find().sort("date_submitted", -1))
     for item in data: item['id'] = str(item['_id'])
     return data
@@ -59,7 +58,6 @@ def get_all_examinees():
     for item in data: item['id'] = str(item['_id'])
     return data
 
-# --- دالات جلب أدوات الأقسام (معدلة لتناسب مجموعات السحاب) ---
 def get_tools_from_db(collection):
     data = list(collection.find())
     for item in data: item['id'] = str(item['_id'])
@@ -69,7 +67,9 @@ def get_tools_from_db(collection):
 @app.route('/')
 def index():
     current_text = get_current_offer()
-    return render_template('index.html', offer_text=current_text)
+    # ✅ إصلاح هام: جلب السلايدات وتمريرها للصفحة
+    slides = list(slides_col.find().sort("date", -1))
+    return render_template('index.html', offer_text=current_text, slides=slides)
 
 @app.route('/login')
 def login():
@@ -95,9 +95,10 @@ def login_check():
 def dashboard():
     all_bookings = get_all_bookings()
     all_examinees = get_all_examinees()
+    # ✅ التأكد من أن الملف المطلوب هو dashboard.html الصحيح
     return render_template('dashboard.html', bookings=all_bookings, examinees=all_examinees)
 
-# --- لوحات تحكم الأقسام التقنية (معدلة للسحاب) ---
+# --- لوحات تحكم الأقسام التقنية ---
 @app.route('/ortho-tech')
 def dashboard_ortho():
     tools = get_tools_from_db(ortho_tools_col)
@@ -113,7 +114,7 @@ def dashboard_research():
     tools = get_tools_from_db(research_tools_col)
     return render_template('dept_dashboard.html', title="قسم البحث العلمي Research Tech", tools=tools, post_url="/add_research_tool", delete_url="/delete_research_tool")
 
-# --- دالات إضافة الأدوات (معدلة للسحاب) ---
+# --- دالات إضافة الأدوات ---
 def save_tool_to_db(collection):
     try:
         name = request.form.get('tool_name')
@@ -134,7 +135,7 @@ def add_psy_tool(): return save_tool_to_db(psy_tools_col)
 @app.route('/add_research_tool', methods=['POST'])
 def add_research_tool(): return save_tool_to_db(research_tools_col)
 
-# --- دالات حذف الأدوات (معدلة للسحاب) ---
+# --- دالات حذف الأدوات ---
 def delete_tool_from_db(collection, tool_id):
     try:
         collection.delete_one({"_id": ObjectId(tool_id)})
@@ -150,7 +151,7 @@ def delete_psy_tool(tool_id): return delete_tool_from_db(psy_tools_col, tool_id)
 @app.route('/delete_research_tool/<tool_id>', methods=['POST'])
 def delete_research_tool(tool_id): return delete_tool_from_db(research_tools_col, tool_id)
 
-# --- مسارات الحجوزات والمفحوصين (معدلة للسحاب) ---
+# --- مسارات الحجوزات والمفحوصين ---
 @app.route('/save_booking', methods=['POST'])
 def save_booking():
     try:
@@ -219,12 +220,12 @@ def save_examinee_note():
         examinees_col.update_one({"_id": ObjectId(e_id)}, {"$set": {note_type: content}})
         return jsonify({"success": True})
     except Exception as e: return jsonify({"success": False, "error": str(e)}), 500
+
 @app.route('/save_full_report', methods=['POST'])
 def save_full_report():
     try:
         data = request.json
         e_id = data.get('id')
-        # تحديث وثيقة المفحوص بكل البيانات الجديدة للتقرير
         examinees_col.update_one(
             {"_id": ObjectId(e_id)},
             {"$set": {
@@ -239,13 +240,13 @@ def save_full_report():
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+
 @app.route('/follow_up/<examinee_id>')
 def follow_up(examinee_id):
     try:
-        # جلب بيانات المفحوص من السحابة لعرضها في التقرير
         examinee = examinees_col.find_one({"_id": ObjectId(examinee_id)})
         if examinee:
-            examinee['id'] = str(examinee['_id']) # تحويل المعرف لنص
+            examinee['id'] = str(examinee['_id'])
             return render_template('follow_up_report.html', e=examinee)
         return "المفحوص غير موجود", 404
     except Exception as e:
@@ -255,77 +256,65 @@ def follow_up(examinee_id):
 def upload_examinee_file():
     try:
         e_id = request.form.get('id')
-        file_type = request.form.get('type') # photo أو doc
+        file_type = request.form.get('type')
         file = request.files.get('file')
         
         if file:
-            # تحويل الملف إلى Base64
             encoded_string = base64.b64encode(file.read()).decode('utf-8')
             mime_type = file.content_type
             data_uri = f"data:{mime_type};base64,{encoded_string}"
             
-            # التخزين في MongoDB
             if file_type == 'photo':
                 examinees_col.update_one({"_id": ObjectId(e_id)}, {"$set": {"photo": data_uri}})
             else:
-                field = request.form.get('field') # الحقل المستهدف
+                field = request.form.get('field')
                 examinees_col.update_one({"_id": ObjectId(e_id)}, {"$push": {f"{field}_docs": data_uri}})
             
             return jsonify({"success": True, "url": data_uri})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+
 @app.route('/delete_examinee_photo', methods=['POST'])
 def delete_examinee_photo():
     try:
         e_id = request.json.get('id')
-        # مسح حقل الصورة من قاعدة البيانات
         examinees_col.update_one({"_id": ObjectId(e_id)}, {"$unset": {"photo": ""}})
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+
 @app.route('/add_slide', methods=['POST'])
 def add_slide():
-    # 1. التحقق من وجود الملف في الطلب
+    # 1. التحقق من وجود الملف
     if 'media_file' not in request.files:
         return 'لا يوجد ملف مرفق', 400
     
     file = request.files['media_file']
-    content = request.form.get('content')  # النص القادم من المحرر
+    content = request.form.get('content')
 
-    # 2. التحقق من اسم الملف وامتداده
     if file.filename == '':
         return 'لم يتم اختيار ملف', 400
 
     if file and allowed_file(file.filename):
-        # تأمين اسم الملف (حماية أمنية ضرورية)
         filename = secure_filename(file.filename)
-        
-        # 3. حفظ الملف فعلياً في مجلد static/uploads
+        # حفظ الملف في المجلد
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         
-        # إنشاء المسار الذي سيخزن في قاعدة البيانات
-        # هذا المسار هو الذي سيستخدمه ملف index.html لعرض الفيديو/الصورة
-        db_file_path = f"static/uploads/{filename}"
+        # المسار للعرض في HTML
+        db_file_path = f"/static/uploads/{filename}"
 
-        # ---------------------------------------------------------
-        # 4. منطقة الحفظ في قاعدة البيانات (عدل هذا الجزء حسب الكود تبعك)
-        # ---------------------------------------------------------
-        # مثال إذا كنت تستخدم PyMongo:
-        # slides_collection.insert_one({
-        #     "image": db_file_path,  # مسار الفيديو أو الصورة
-        #     "text": content,        # النص المنسق
-        #     "date": datetime.now()
-        # })
-        
-        # مثال إذا كنت تستخدم SQLAlchemy:
-        # new_slide = Slide(image=db_file_path, text=content)
-        # db.session.add(new_slide)
-        # db.session.commit()
-        # ---------------------------------------------------------
+        # ✅ 2. حفظ البيانات في MongoDB (تم تفعيلها الآن)
+        slides_col.insert_one({
+            "image": db_file_path,  # مسار الفيديو أو الصورة
+            "text": content,        # النص المنسق
+            "date": datetime.now()
+        })
 
         return 'تم الحفظ بنجاح', 200
     else:
         return 'نوع الملف غير مسموح', 400
-        if __name__ == '__main__':
+
+# ✅ تم إصلاح الإزاحة (Indentation) هنا ليعمل التطبيق بشكل صحيح
+if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
