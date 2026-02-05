@@ -120,7 +120,8 @@ def login_check():
 
 @app.route('/dashboard')
 def dashboard():
-    # حماية بسيطة للوحة التحكم
+slides_col.delete_many({})  
+  # حماية بسيطة للوحة التحكم
     # if 'user' not in session: return redirect(url_for('login'))
     
     all_bookings = get_all_bookings()
