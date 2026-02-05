@@ -233,13 +233,23 @@
                         {% for slide in slides %}
                         <tr>
                             <td style="width: 150px;">
-                                {% if slide.image.endswith(('.mp4', '.mov', '.webm')) %}
-                                    <video src="{{ slide.image }}" style="width: 100px; height: 60px; object-fit: cover; border-radius: 5px;"></video>
+                                {% if slide.image %}
+                                    {% if slide.image.endswith(('.mp4', '.mov', '.webm')) %}
+                                        <video src="{{ slide.image }}" style="width: 100px; height: 60px; object-fit: cover; border-radius: 5px;"></video>
+                                    {% else %}
+                                        <img src="{{ slide.image }}" style="width: 100px; height: 60px; object-fit: cover; border-radius: 5px;">
+                                    {% endif %}
                                 {% else %}
-                                    <img src="{{ slide.image }}" style="width: 100px; height: 60px; object-fit: cover; border-radius: 5px;">
+                                    <div style="background: #eee; color: #555; padding: 5px; border-radius: 5px; text-align: center; font-size: 0.8rem;">
+                                        🚫 نص فقط (قديم)
+                                    </div>
                                 {% endif %}
                             </td>
-                            <td>{{ slide.text | striptags | truncate(50) }}</td>
+                            
+                            <td>
+                                {{ slide.text | striptags | truncate(50) }}
+                            </td>
+                            
                             <td>
                                 <button onclick="deleteSlide('{{ slide.id }}')" style="background:var(--danger); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">حذف 🗑️</button>
                             </td>
