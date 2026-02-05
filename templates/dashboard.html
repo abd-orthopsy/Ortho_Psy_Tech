@@ -19,7 +19,7 @@
         }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-gray); margin: 0; }
 
-        /* 🔝 الشريط العلوي */
+        /* 🔝 الشريط العلوي الجديد */
         .top-navbar {
             background: var(--brand-bg);
             color: white;
@@ -104,7 +104,7 @@
 
         /* المحرر */
         .editor-wrapper { margin-top: 20px; border-radius: 12px; overflow: hidden; border: 1px solid #ddd; background: white; }
-        .ql-container { height: 150px; } /* ارتفاع موحد للمحررات */
+        .ql-container { height: 150px; }
         .update-btn { background: var(--brand-bg); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; margin-top: 15px; width: 100%; font-weight: bold; font-size: 1.1rem; }
         
         .sidebar-overlay {
@@ -189,8 +189,8 @@
                             <td><strong>{{ e.main_name }}</strong></td>
                             <td>#{{ e.id[-5:] }}</td>
                             <td>
-                                <a href="/examinee_file/{{ e.id }}" style="background:var(--brand-bg); color:white; text-decoration:none; padding:6px 12px; border-radius:5px; font-size:0.9rem; display:inline-block;">📂 الملف</a>
-                                <a href="/follow_up/{{ e.id }}" style="background:#28a745; color:white; text-decoration:none; padding:6px 12px; border-radius:5px; font-size:0.9rem; display:inline-block; margin-right:5px;">📝 التقرير</a>
+                                <a href="/examinee_file/{{ e.id }}" style="background:var(--brand-bg); color:white; text-decoration:none; padding:6px 12px; border-radius:5px; font-size:0.9rem; display:inline-block;">📂 الملف الإكلينيكي</a>
+                                <a href="/follow_up/{{ e.id }}" style="background:#28a745; color:white; text-decoration:none; padding:6px 12px; border-radius:5px; font-size:0.9rem; display:inline-block; margin-right:5px;">📝 التقرير التشخيصي</a>
                                 <button onclick="deleteItem('examinee', '{{ e.id }}')" style="background:var(--danger); color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; margin-right:5px;">حذف</button>
                             </td>
                         </tr>
@@ -232,15 +232,14 @@
             </div>
 
             <hr style="margin: 40px 0; border-top: 2px dashed #ddd;">
-            <h3>🎞️ العروض المنشورة حالياً ({{ slides|length }})</h3>
             
+            <h3>🎞️ العروض المنشورة حالياً ({{ slides|length }})</h3>
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
                             <th>النوع</th>
                             <th>المعاينة / المحتوى</th>
-                            <th>تاريخ النشر</th>
                             <th>حذف</th>
                         </tr>
                     </thead>
@@ -254,6 +253,7 @@
                                     <span style="background: #3498db; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem;">نص فقط</span>
                                 {% endif %}
                             </td>
+                            
                             <td>
                                 {% if slide.image %}
                                     <div style="display: flex; gap: 10px; align-items: center;">
@@ -270,9 +270,7 @@
                                     </div>
                                 {% endif %}
                             </td>
-                            <td style="font-size: 0.85rem; color: #777;">
-                                {{ slide.date.strftime('%Y-%m-%d') if slide.date else '-' }}
-                            </td>
+                            
                             <td>
                                 <button onclick="deleteSlide('{{ slide.id }}')" style="background:var(--danger); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">حذف 🗑️</button>
                             </td>
@@ -281,28 +279,25 @@
                     </tbody>
                 </table>
             </div>
-
         </div>
 
-    </div> 
-
-    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    </div> <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     
     <script>
-        // --- 1. القائمة الجانبية ---
+        // --- 1. وظائف القائمة الجانبية ---
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
             document.querySelector('.sidebar-overlay').classList.toggle('active');
         }
 
-        // --- 2. إعداد المحررات (اثنان منفصلان) ---
+        // --- 2. إعداد المحررات ---
         var toolbarOptions = [['bold', 'italic', 'underline'], [{ 'color': [] }, { 'background': [] }], [{ 'align': [] }], [{ 'direction': 'rtl' }]];
         
         // محرر الميديا
         var quillMedia = new Quill('#media-editor', {
             theme: 'snow',
             modules: { toolbar: toolbarOptions },
-            placeholder: 'اكتب تعليقاً على الفيديو/الصورة...'
+            placeholder: 'اكتب وصفاً للفيديو أو الصورة...'
         });
 
         // محرر النصوص المستقل
@@ -318,11 +313,12 @@
             let file = fileInput.files[0];
             
             if (!file) {
-                alert("⚠️ يرجى اختيار ملف ميديا لهذا القسم!");
+                alert("⚠️ المرجو اختيار ملف فيديو أو صورة أولاً!");
                 return;
             }
-            if (file.size > 20 * 1024 * 1024) {
-                alert("⚠️ حجم الملف كبير جداً! (Max 20MB)");
+
+            if (file.size > 20 * 1024 * 1024) { // 20 ميغا
+                alert("⚠️ حجم الملف كبير جداً! يجب أن يكون أقل من 20 ميغا.");
                 return;
             }
 
@@ -330,14 +326,33 @@
             fd.append('media_file', file);
             fd.append('content', quillMedia.root.innerHTML);
 
+            let btn = document.querySelector('.update-btn');
+            btn.textContent = "جاري الرفع... ⏳";
+            btn.disabled = true;
+
             fetch('/add_slide', { method: 'POST', body: fd })
-            .then(r => r.ok ? window.location.reload() : alert("فشل الرفع"))
-            .catch(e => alert("خطأ في الاتصال"));
+            .then(response => {
+                if (response.ok) {
+                    alert("تم نشر العرض بنجاح! ✅");
+                    window.location.reload();
+                } else {
+                    alert("حدث خطأ أثناء الرفع ❌");
+                    btn.textContent = "نشر العرض 🚀";
+                    btn.disabled = false;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("فشل الاتصال بالسيرفر");
+                btn.textContent = "نشر العرض 🚀";
+                btn.disabled = false;
+            });
         }
 
-        // --- 4. دالة رفع الإعلان النصي فقط ---
+        // --- 4. دالة رفع الإعلان النصي ---
         function uploadTextSlide() {
             let content = quillText.root.innerHTML;
+            // التحقق من أن المحتوى ليس فارغاً
             if (quillText.getText().trim().length === 0) {
                 alert("⚠️ الرجاء كتابة نص للإعلان!");
                 return;
@@ -347,20 +362,42 @@
             fd.append('content', content);
 
             fetch('/add_text_slide', { method: 'POST', body: fd })
-            .then(r => r.ok ? window.location.reload() : alert("فشل النشر"))
-            .catch(e => alert("خطأ في الاتصال"));
+            .then(response => {
+                if (response.ok) {
+                    alert("تم نشر الإعلان النصي بنجاح! ✅");
+                    window.location.reload();
+                } else {
+                    alert("حدث خطأ أثناء النشر ❌");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("فشل الاتصال بالسيرفر");
+            });
         }
 
-        // --- 5. دوال الحذف والتحويل ---
+        // --- 5. دوال الإدارة (الحذف والتحويل) ---
         function convert(id) { 
-            if(confirm('تحويل إلى مفحوص؟')) fetch('/convert_to_examinee/' + id, { method: 'POST' }).then(r => location.reload()); 
+            if(confirm('هل تريد تحويل هذا الشخص إلى قائمة المفحوصين؟')) { 
+                fetch('/convert_to_examinee/' + id, { method: 'POST' }) 
+                .then(r => r.ok ? location.reload() : alert("خطأ في التحويل")); 
+            } 
         } 
+
         function deleteItem(type, id) { 
-            if(confirm('حذف نهائي؟')) fetch((type === 'booking' ? '/delete_booking/' : '/delete_examinee/') + id, { method: 'POST' }).then(r => location.reload()); 
+            if(confirm('هل أنت متأكد من الحذف النهائي؟')) { 
+                let url = type === 'booking' ? '/delete_booking/' + id : '/delete_examinee/' + id; 
+                fetch(url, { method: 'POST' }) 
+                .then(r => r.ok ? location.reload() : alert("خطأ في الحذف")); 
+            } 
         }
+
         function deleteSlide(id) {
-            if(confirm('حذف هذا العرض من السلايدر؟')) fetch('/delete_slide/' + id, { method: 'POST' }).then(r => location.reload());
+            if(confirm('هل أنت متأكد من حذف هذا العرض (نص أو ميديا)؟')) {
+                fetch('/delete_slide/' + id, { method: 'POST' })
+                .then(r => r.ok ? location.reload() : alert("خطأ في الحذف"));
+            }
         }
     </script>
 </body>
-                                        </html>
+    </html>
