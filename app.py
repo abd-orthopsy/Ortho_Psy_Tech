@@ -258,7 +258,7 @@ def save_examinee_note():
         examinees_col.update_one({"_id": ObjectId(e_id)}, {"$set": {note_type: content}})
         return jsonify({"success": True})
     except Exception as e: return jsonify({"success": False, "error": str(e)}), 500
-
+ك
 @app.route('/save_full_report', methods=['POST'])
 def save_full_report():
     try:
@@ -325,7 +325,6 @@ def delete_examinee_photo():
 
 @app.route('/add_slide', methods=['POST'])
 def add_slide():
-    # التحقق من وجود الملف
     if 'media_file' not in request.files:
         return 'لا يوجد ملف مرفق', 400
     
@@ -337,17 +336,17 @@ def add_slide():
 
     if file and allowed_file(file.filename):
         try:
-            # --- التغيير الجوهري هنا ---
-            # بدلاً من الحفظ المحلي، نرفع الملف إلى Cloudinary
-            # resource_type="auto" يسمح برفع الصور والفيديوهات تلقائياً
+            # 1. الرفع إلى Cloudinary
+            # resource_type="auto" يكتشف هل هو فيديو أم صورة تلقائياً
             upload_result = cloudinary.uploader.upload(file, resource_type="auto")
             
-            # نحصل على الرابط الآمن من سحابة Cloudinary
+            # 2. الحصول على الرابط السحابي (هذا هو المفتاح!)
+            # الرابط يجب أن يبدأ بـ https://res.cloudinary.com/...
             cloud_url = upload_result['secure_url']
 
-            # حفظ الرابط في MongoDB بدلاً من المسار المحلي
+            # 3. الحفظ في قاعدة البيانات
             slides_col.insert_one({
-                "image": cloud_url,  # الرابط السحابي الدائم
+                "image": cloud_url,  # 🛑 تأكد أنك تستخدم المتغير cloud_url هنا وليس db_file_path
                 "text": content,
                 "date": datetime.now()
             })
@@ -357,7 +356,7 @@ def add_slide():
             return f"حدث خطأ أثناء الرفع: {str(e)}", 500
     else:
         return 'نوع الملف غير مسموح', 400
-
+      
 @app.route('/add_text_slide', methods=['POST'])
 def add_text_slide():
     try:
