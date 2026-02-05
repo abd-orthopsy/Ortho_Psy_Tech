@@ -384,15 +384,15 @@ def delete_slide(slide_id):
     except Exception as e:
         return str(e), 500
 
-# --- مسار طوارئ لحذف كل الشرائح (استخدمه مرة واحدة ثم احذفه) ---
-@app.route('/force_delete_all_slides')
-def force_delete_all_slides():
+# --- مسار طوارئ لتنظيف السلايدر (استخدمه مرة واحدة) ---
+@app.route('/emergency_reset')
+def emergency_reset():
     try:
-        # هذا الأمر يحذف كل ما في جدول الشرائح
-        slides_col.delete_many({}) 
-        return "تم تنظيف جميع الشرائح بنجاح! ✅ .. عد الآن للوحة التحكم وأضف الفيديو الجديد."
+        # حذف جميع المستندات في مجموعة slides
+        slides_col.delete_many({})
+        return "<h1>تمت العملية بنجاح! ✅</h1><p>تم حذف كل الشرائح العالقة. السلايدر الآن نظيف تماماً. عد للوحة التحكم وارفع الفيديو الجديد.</p>"
     except Exception as e:
-        return str(e)
+        return f"حدث خطأ: {str(e)}"
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
