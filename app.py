@@ -119,8 +119,7 @@ def login_check():
     return jsonify({"success": False})
 
 @app.route('/dashboard')
-def dashboard():
-slides_col.delete_many({})  
+def dashboard(): 
   # حماية بسيطة للوحة التحكم
     # if 'user' not in session: return redirect(url_for('login'))
     
