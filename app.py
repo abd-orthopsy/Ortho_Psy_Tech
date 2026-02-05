@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 import os
 from datetime import datetime
 from pymongo import MongoClient
@@ -6,9 +6,21 @@ from bson.objectid import ObjectId
 import base64
 from werkzeug.utils import secure_filename
 
-# --- إعدادات رفع الملفات ---
-UPLOAD_FOLDER = 'static/uploads'  # المكان الذي ستحفظ فيه الفيديوهات والصور
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'mov', 'webm'} # السماح بالفيديو
+# --- 1. إضافة مكتبات Cloudinary ---
+import cloudinary
+import cloudinary.uploader
+
+# --- 2. إعدادات Cloudinary (أدخل بياناتك هنا) ---
+# 🛑 هام جداً: استبدل النصوص العربية أدناه بالبيانات التي نسختها من الموقع
+cloudinary.config( 
+  cloud_name = "dgzavr5ar", 
+  api_key = "376227331292583", 
+  api_secret = "ik4mEXWuFPlUZwQDoibpdlNyuPw" 
+)
+
+# --- إعدادات رفع الملفات (للاحتياط فقط) ---
+UPLOAD_FOLDER = 'static/uploads' 
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'mov', 'webm'}
 
 # 🛠️ تحديد المسارات المطلقة لضمان عمل Render بشكل صحيح
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -16,11 +28,11 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 
 app = Flask(__name__, template_folder=TEMPLATE_DIR)
 
+app.secret_key = 'super_secret_key_ortho_psy' # مفتاح تشفير للجلسات (مهم للأمان)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-# تحديد الحد الأقصى للحجم بـ 20 ميغا
-app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024 
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024 # رفع الحد إلى 50 ميغا للفيديوهات
 
-# دالة للتأكد من وجود مجلد الرفع، وإنشائه إن لم يكن موجوداً
+# دالة للتأكد من وجود مجلد الرفع (احتياطي)
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def allowed_file(filename):
@@ -36,7 +48,7 @@ db = client['ortho_psy_db']
 bookings_col = db['bookings']
 examinees_col = db['examinees']
 settings_col = db['settings']
-slides_col = db['slides']  # ✅ مجموعة السلايدر
+slides_col = db['slides'] 
 
 # مجموعات الأدوات حسب الأقسام
 ortho_tools_col = db['ortho_tools']
@@ -67,11 +79,10 @@ def get_tools_from_db(collection):
 @app.route('/')
 def index():
     current_text = get_current_offer()
-    # ✅ إصلاح هام: جلب السلايدات ومعالجة القديم منها
+    # جلب السلايدات ومعالجة القديم منها
     raw_slides = list(slides_col.find().sort("date", -1))
     slides = []
     for s in raw_slides:
-        # إذا كانت الشريحة قديمة جداً ولا تملك حقل صورة، نضع لها قيمة فارغة لتجنب الأخطاء
         if 'image' not in s:
             s['image'] = None
         slides.append(s)
@@ -82,33 +93,43 @@ def index():
 def login():
     return render_template('login.html')
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
+
 @app.route('/login_check', methods=['POST'])
 def login_check():
     user = request.form.get('username')
     pw = request.form.get('password')
     
     if user == "admin" and pw == "1234":
+        session['user'] = 'admin'
         return jsonify({"success": True, "redirect": "/dashboard"})
     elif user == "ortho_admin" and pw == "ortho2026":
+        session['user'] = 'ortho'
         return jsonify({"success": True, "redirect": "/ortho-tech"})
     elif user == "psy_admin" and pw == "psy2026":
+        session['user'] = 'psy'
         return jsonify({"success": True, "redirect": "/psy-tech"})
     elif user == "research_admin" and pw == "res2026":
+        session['user'] = 'research'
         return jsonify({"success": True, "redirect": "/research-tech"})
         
     return jsonify({"success": False})
 
 @app.route('/dashboard')
 def dashboard():
+    # حماية بسيطة للوحة التحكم
+    # if 'user' not in session: return redirect(url_for('login'))
+    
     all_bookings = get_all_bookings()
     all_examinees = get_all_examinees()
     
-    # ✅ جلب السلايدات للوحة التحكم مع معالجة البيانات القديمة
     raw_slides = list(slides_col.find().sort("date", -1))
     clean_slides = []
     for slide in raw_slides:
         slide['id'] = str(slide['_id'])
-        # التعامل مع الشرائح التي لا تحتوي على صور (النصية فقط أو القديمة)
         if 'image' not in slide:
             slide['image'] = None
         clean_slides.append(slide)
@@ -300,11 +321,11 @@ def delete_examinee_photo():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
-# --- SLIDER LOGIC ---
+# --- SLIDER LOGIC WITH CLOUDINARY ---
 
 @app.route('/add_slide', methods=['POST'])
 def add_slide():
-    # 1. إضافة عرض (فيديو/صورة)
+    # التحقق من وجود الملف
     if 'media_file' not in request.files:
         return 'لا يوجد ملف مرفق', 400
     
@@ -315,25 +336,28 @@ def add_slide():
         return 'لم يتم اختيار ملف', 400
 
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        # حفظ الملف في المجلد
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        
-        # المسار للعرض في HTML
-        db_file_path = f"/static/uploads/{filename}"
+        try:
+            # --- التغيير الجوهري هنا ---
+            # بدلاً من الحفظ المحلي، نرفع الملف إلى Cloudinary
+            # resource_type="auto" يسمح برفع الصور والفيديوهات تلقائياً
+            upload_result = cloudinary.uploader.upload(file, resource_type="auto")
+            
+            # نحصل على الرابط الآمن من سحابة Cloudinary
+            cloud_url = upload_result['secure_url']
 
-        # حفظ البيانات في MongoDB
-        slides_col.insert_one({
-            "image": db_file_path,  # مسار الفيديو أو الصورة
-            "text": content,        # النص المنسق
-            "date": datetime.now()
-        })
+            # حفظ الرابط في MongoDB بدلاً من المسار المحلي
+            slides_col.insert_one({
+                "image": cloud_url,  # الرابط السحابي الدائم
+                "text": content,
+                "date": datetime.now()
+            })
 
-        return 'تم الحفظ بنجاح', 200
+            return 'تم الحفظ والرفع بنجاح ✅', 200
+        except Exception as e:
+            return f"حدث خطأ أثناء الرفع: {str(e)}", 500
     else:
         return 'نوع الملف غير مسموح', 400
 
-# ✅ مسار جديد لإضافة إعلان نصي فقط
 @app.route('/add_text_slide', methods=['POST'])
 def add_text_slide():
     try:
@@ -353,7 +377,9 @@ def add_text_slide():
 @app.route('/delete_slide/<slide_id>', methods=['POST'])
 def delete_slide(slide_id):
     try:
-        # حذف الشريحة من قاعدة البيانات (سواء كانت نصية أو ميديا)
+        # حذف الشريحة من قاعدة البيانات
+        # ملاحظة: الملف سيبقى في Cloudinary، يمكن تطوير الكود لحذفه من هناك أيضاً
+        # ولكن لحماية البيانات حالياً نكتفي بحذفه من العرض
         slides_col.delete_one({"_id": ObjectId(slide_id)})
         return "تم حذف الشريحة"
     except Exception as e:
