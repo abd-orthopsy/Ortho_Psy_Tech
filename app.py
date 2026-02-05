@@ -17,7 +17,7 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 app = Flask(__name__, template_folder=TEMPLATE_DIR)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-# تحديد الحد الأقصى للحجم بـ 20 ميغا (تم توحيد الحجم ليكون 20 بدلاً من 16 لتجنب التضارب)
+# تحديد الحد الأقصى للحجم بـ 20 ميغا
 app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024 
 
 # دالة للتأكد من وجود مجلد الرفع، وإنشائه إن لم يكن موجوداً
@@ -36,7 +36,7 @@ db = client['ortho_psy_db']
 bookings_col = db['bookings']
 examinees_col = db['examinees']
 settings_col = db['settings']
-slides_col = db['slides']  # ✅ تمت إضافة هذه المجموعة ليعمل السلايدر
+slides_col = db['slides']  # ✅ مجموعة السلايدر
 
 # مجموعات الأدوات حسب الأقسام
 ortho_tools_col = db['ortho_tools']
@@ -67,7 +67,7 @@ def get_tools_from_db(collection):
 @app.route('/')
 def index():
     current_text = get_current_offer()
-    # ✅ إصلاح هام: جلب السلايدات وتمريرها للصفحة
+    # جلب السلايدات وتمريرها للصفحة الرئيسية
     slides = list(slides_col.find().sort("date", -1))
     return render_template('index.html', offer_text=current_text, slides=slides)
 
@@ -95,8 +95,12 @@ def login_check():
 def dashboard():
     all_bookings = get_all_bookings()
     all_examinees = get_all_examinees()
-    # ✅ التأكد من أن الملف المطلوب هو dashboard.html الصحيح
-    return render_template('dashboard.html', bookings=all_bookings, examinees=all_examinees)
+    
+    # ✅ (تعديل جديد) جلب السلايدات لعرضها في لوحة التحكم للحذف
+    all_slides = list(slides_col.find().sort("date", -1))
+    for slide in all_slides: slide['id'] = str(slide['_id'])
+    
+    return render_template('dashboard.html', bookings=all_bookings, examinees=all_examinees, slides=all_slides)
 
 # --- لوحات تحكم الأقسام التقنية ---
 @app.route('/ortho-tech')
@@ -303,7 +307,7 @@ def add_slide():
         # المسار للعرض في HTML
         db_file_path = f"/static/uploads/{filename}"
 
-        # ✅ 2. حفظ البيانات في MongoDB (تم تفعيلها الآن)
+        # حفظ البيانات في MongoDB
         slides_col.insert_one({
             "image": db_file_path,  # مسار الفيديو أو الصورة
             "text": content,        # النص المنسق
@@ -314,7 +318,17 @@ def add_slide():
     else:
         return 'نوع الملف غير مسموح', 400
 
-# ✅ تم إصلاح الإزاحة (Indentation) هنا ليعمل التطبيق بشكل صحيح
+# ✅ (إضافة جديدة) دالة لحذف السلايد
+@app.route('/delete_slide/<slide_id>', methods=['POST'])
+def delete_slide(slide_id):
+    try:
+        # حذف الشريحة من قاعدة البيانات
+        slides_col.delete_one({"_id": ObjectId(slide_id)})
+        return "تم حذف الشريحة"
+    except Exception as e:
+        return str(e), 500
+
+# ✅ تم إصلاح الإزاحة (Indentation) ليكون في المستوى الصحيح
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
