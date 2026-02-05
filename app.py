@@ -7,43 +7,38 @@ import base64
 from werkzeug.utils import secure_filename
 
 # --- إعدادات رفع الملفات ---
-UPLOAD_FOLDER = 'static/uploads'  # المكان الذي ستحفظ فيه الفيديوهات والصور
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'mov', 'webm'} # السماح بالفيديو
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'mov', 'webm'}
 
-# 🛠️ تحديد المسارات المطلقة لضمان عمل Render بشكل صحيح
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 
 app = Flask(__name__, template_folder=TEMPLATE_DIR)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-# تحديد الحد الأقصى للحجم بـ 20 ميغا
 app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024 
 
-# دالة للتأكد من وجود مجلد الرفع، وإنشائه إن لم يكن موجوداً
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# 🔗 الربط بسحابة MongoDB
+# 🔗 MongoDB Connection
 MONGO_URI = "mongodb+srv://abdmohamed_db_user:F6S0BtOD5tLkBUop@cluster0.jgimopg.mongodb.net/?retryWrites=true&w=majority"
 client = MongoClient(MONGO_URI)
 db = client['ortho_psy_db']
 
-# مجموعات البيانات (Collections)
 bookings_col = db['bookings']
 examinees_col = db['examinees']
 settings_col = db['settings']
-slides_col = db['slides']  # ✅ مجموعة السلايدر
+slides_col = db['slides']
 
-# مجموعات الأدوات حسب الأقسام
 ortho_tools_col = db['ortho_tools']
 psy_tools_col = db['psy_tools']
 research_tools_col = db['research_tools']
 
-# --- دالات جلب البيانات الأساسية ---
+# --- Helper Functions ---
 def get_current_offer():
     offer = settings_col.find_one({"type": "offer"})
     return offer['content'] if offer else "أهلاً بكم في Ortho_Psy Tech"
@@ -63,11 +58,10 @@ def get_tools_from_db(collection):
     for item in data: item['id'] = str(item['_id'])
     return data
 
-# --- المسارات الأساسية ---
+# --- Routes ---
 @app.route('/')
 def index():
     current_text = get_current_offer()
-    # جلب السلايدات وتمريرها للصفحة الرئيسية
     slides = list(slides_col.find().sort("date", -1))
     return render_template('index.html', offer_text=current_text, slides=slides)
 
@@ -96,13 +90,17 @@ def dashboard():
     all_bookings = get_all_bookings()
     all_examinees = get_all_examinees()
     
-    # ✅ (تعديل جديد) جلب السلايدات لعرضها في لوحة التحكم للحذف
+    # ✅ تحسين: جلب السلايدات ومعالجة القديم منها (الذي قد لا يملك حقل image)
     all_slides = list(slides_col.find().sort("date", -1))
-    for slide in all_slides: slide['id'] = str(slide['_id'])
-    
+    for slide in all_slides: 
+        slide['id'] = str(slide['_id'])
+        # إذا كانت الشريحة قديمة جداً ولا تملك حقل صورة، نضع لها قيمة فارغة لتجنب الأخطاء
+        if 'image' not in slide:
+            slide['image'] = None
+
     return render_template('dashboard.html', bookings=all_bookings, examinees=all_examinees, slides=all_slides)
 
-# --- لوحات تحكم الأقسام التقنية ---
+# --- Dept Dashboards ---
 @app.route('/ortho-tech')
 def dashboard_ortho():
     tools = get_tools_from_db(ortho_tools_col)
@@ -118,7 +116,7 @@ def dashboard_research():
     tools = get_tools_from_db(research_tools_col)
     return render_template('dept_dashboard.html', title="قسم البحث العلمي Research Tech", tools=tools, post_url="/add_research_tool", delete_url="/delete_research_tool")
 
-# --- دالات إضافة الأدوات ---
+# --- Add Tools ---
 def save_tool_to_db(collection):
     try:
         name = request.form.get('tool_name')
@@ -139,7 +137,7 @@ def add_psy_tool(): return save_tool_to_db(psy_tools_col)
 @app.route('/add_research_tool', methods=['POST'])
 def add_research_tool(): return save_tool_to_db(research_tools_col)
 
-# --- دالات حذف الأدوات ---
+# --- Delete Tools ---
 def delete_tool_from_db(collection, tool_id):
     try:
         collection.delete_one({"_id": ObjectId(tool_id)})
@@ -155,7 +153,7 @@ def delete_psy_tool(tool_id): return delete_tool_from_db(psy_tools_col, tool_id)
 @app.route('/delete_research_tool/<tool_id>', methods=['POST'])
 def delete_research_tool(tool_id): return delete_tool_from_db(research_tools_col, tool_id)
 
-# --- مسارات الحجوزات والمفحوصين ---
+# --- Booking & Examinees Logic ---
 @app.route('/save_booking', methods=['POST'])
 def save_booking():
     try:
@@ -287,9 +285,11 @@ def delete_examinee_photo():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
+# --- SLIDER LOGIC ---
+
 @app.route('/add_slide', methods=['POST'])
 def add_slide():
-    # 1. التحقق من وجود الملف
+    # إضافة عرض (فيديو/صورة + نص)
     if 'media_file' not in request.files:
         return 'لا يوجد ملف مرفق', 400
     
@@ -301,34 +301,42 @@ def add_slide():
 
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        # حفظ الملف في المجلد
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        
-        # المسار للعرض في HTML
         db_file_path = f"/static/uploads/{filename}"
 
-        # حفظ البيانات في MongoDB
         slides_col.insert_one({
-            "image": db_file_path,  # مسار الفيديو أو الصورة
-            "text": content,        # النص المنسق
+            "image": db_file_path,
+            "text": content,
             "date": datetime.now()
         })
-
         return 'تم الحفظ بنجاح', 200
     else:
         return 'نوع الملف غير مسموح', 400
 
-# ✅ (إضافة جديدة) دالة لحذف السلايد
+# ✅ مسار جديد لإضافة إعلان نصي فقط
+@app.route('/add_text_slide', methods=['POST'])
+def add_text_slide():
+    try:
+        content = request.form.get('content')
+        if content:
+            slides_col.insert_one({
+                "image": None, # علامة على أنه نص فقط
+                "text": content,
+                "date": datetime.now()
+            })
+            return "تم نشر الإعلان النصي بنجاح", 200
+        return "المحتوى فارغ", 400
+    except Exception as e:
+        return str(e), 500
+
 @app.route('/delete_slide/<slide_id>', methods=['POST'])
 def delete_slide(slide_id):
     try:
-        # حذف الشريحة من قاعدة البيانات
         slides_col.delete_one({"_id": ObjectId(slide_id)})
         return "تم حذف الشريحة"
     except Exception as e:
         return str(e), 500
 
-# ✅ تم إصلاح الإزاحة (Indentation) ليكون في المستوى الصحيح
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
