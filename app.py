@@ -325,6 +325,7 @@ def delete_examinee_photo():
 
 @app.route('/add_slide', methods=['POST'])
 def add_slide():
+    # 1. التحقق من وجود الملف
     if 'media_file' not in request.files:
         return 'لا يوجد ملف مرفق', 400
     
@@ -336,24 +337,38 @@ def add_slide():
 
     if file and allowed_file(file.filename):
         try:
-            # 1. الرفع إلى Cloudinary
-            # resource_type="auto" يكتشف هل هو فيديو أم صورة تلقائياً
-            upload_result = cloudinary.uploader.upload(file, resource_type="auto")
-            
-            # 2. الحصول على الرابط السحابي (هذا هو المفتاح!)
-            # الرابط يجب أن يبدأ بـ https://res.cloudinary.com/...
-            cloud_url = upload_result['secure_url']
+            # تحديد نوع الملف (فيديو أم صورة)
+            filename = file.filename.lower()
+            if filename.endswith(('.mp4', '.mov', '.avi', '.webm')):
+                res_type = "video"
+            else:
+                res_type = "image"
 
-            # 3. الحفظ في قاعدة البيانات
+            # ---------------------------------------------------------
+            # 🚀 الخطوة الحاسمة: الرفع إلى Cloudinary
+            # ---------------------------------------------------------
+            upload_result = cloudinary.uploader.upload(file, resource_type=res_type)
+            
+            # ✅ استخراج الرابط الآمن والدائم من استجابة Cloudinary
+            # هذا الرابط يبدأ بـ https://res.cloudinary.com/...
+            permanent_url = upload_result['secure_url']
+
+            # ---------------------------------------------------------
+            # 💾 الخطوة التي كانت تسبب المشكلة: الحفظ في قاعدة البيانات
+            # ---------------------------------------------------------
+            # في السابق كنت تحفظ مساراً محلياً، الآن نحفظ permanent_url
             slides_col.insert_one({
-                "image": cloud_url,  # 🛑 تأكد أنك تستخدم المتغير cloud_url هنا وليس db_file_path
+                "image": permanent_url,  # 👈 هنا الحل: حفظنا الرابط السحابي
                 "text": content,
-                "date": datetime.now()
+                "date": datetime.now(),
+                "type": res_type         # نحفظ النوع لنستخدمه في العرض
             })
 
-            return 'تم الحفظ والرفع بنجاح ✅', 200
+            return 'تم الحفظ والرفع بنجاح! الفيديو الآن آمن.', 200
         except Exception as e:
-            return f"حدث خطأ أثناء الرفع: {str(e)}", 500
+            # طباعة الخطأ لمعرفة السبب إذا فشل الرفع
+            print(f"Cloudinary Error: {e}")
+            return f"حدث خطأ أثناء الرفع لـ Cloudinary: {str(e)}", 500
     else:
         return 'نوع الملف غير مسموح', 400
       
