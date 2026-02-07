@@ -258,7 +258,7 @@ def save_examinee_note():
         examinees_col.update_one({"_id": ObjectId(e_id)}, {"$set": {note_type: content}})
         return jsonify({"success": True})
     except Exception as e: return jsonify({"success": False, "error": str(e)}), 500
-ك
+
 @app.route('/save_full_report', methods=['POST'])
 def save_full_report():
     try:
